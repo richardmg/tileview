@@ -9,10 +9,12 @@ INSTALLS += target
 
 SOURCES += \
     main.cpp \
-    examplegeometry.cpp
+    examplegeometry.cpp \
+    tileengine.cpp
 
 HEADERS += \
-    examplegeometry.h
+    examplegeometry.h \
+    tileengine.h
 
 RESOURCES += \
     resources.qrc
