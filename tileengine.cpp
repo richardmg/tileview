@@ -2,17 +2,6 @@
 
 #include <QtMath>
 
-/**
- * The matrix is an imagined matrix with the size m_tileCount * m_tileCount.
- * It represents the "window" of tiles that we're currently on top of.
- * (It's imagined, since we don't need to allocate room for it, we only need
- * a vector of m_tileCount TileDescriptions, that we can reuse).
- * This function returns the matrix coordinate under the given
- * world pos. This coordinate will be in the range [0, m_tileCount - 1] (for
- * each dimention).
- * This should not be confused with the tile coordinate, which has an infinite
- * range, and represents the logical tile under the world position.
- */
 QPoint TileEngine::matrixCoordForWorldPos(QVector3D worldPos)
 {
     const QPoint tileCoord = tileCoordAtWorldPos(worldPos);
