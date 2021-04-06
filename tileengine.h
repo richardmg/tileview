@@ -25,27 +25,45 @@ struct TileDescription
 
 class TileEngine : public QObject
 {
-public:
-    TileEngine();
+    Q_OBJECT
+    QML_ELEMENT;
+
+    Q_PROPERTY(int rowCount READ rowCount WRITE setRowCount NOTIFY rowCountChanged)
+    Q_PROPERTY(qreal tileSize READ tileSize WRITE setTileSize NOTIFY tileSizeChanged)
+    Q_PROPERTY(QVector3D targetPosition READ targetPosition WRITE setTargetPosition NOTIFY targetPositionChanged)
 
 public:
-    TileEngine(int tileCount, qreal tileWorldSize, QObject *parent = nullptr);
+    explicit TileEngine(QObject *parent = nullptr);
+    ~TileEngine() override;
 
-    void setTargetPosition(QVector3D worldPos);
-    QVector3D worldPosForTileCoord(QPoint tileCoord);
-    QPoint tileCoordAtWorldPos(QVector3D worldPos);
+    Q_INVOKABLE QVector3D worldPosAtTileCoord(QPoint tileCoord) const;
+    Q_INVOKABLE QPoint tileCoordAtWorldPos(QVector3D worldPos) const;
+
+    int rowCount() const;
+    void setRowCount(int rowCount);
+
+    qreal tileSize() const;
+    void setTileSize(qreal tileSize);
+
+    QVector3D targetPosition() const;
+    void setTargetPosition(QVector3D targetPosition);
 
     virtual void updateTiles(const QVector<TileDescription> &tiles);
     virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
 
+signals:
+    void rowCountChanged();
+    void tileSizeChanged();
+    void targetPositionChanged();
+
 private:
-    int matrixPos(int startEdge, int edgeShifted);
-    QPoint matrixCoordForWorldPos(QVector3D worldPos);
-    QPoint tileCoordForMatrixCoord(QPoint matrixCoord);
+    int matrixPos(int startEdge, int edgeShifted) const;
+    QPoint matrixCoordForWorldPos(QVector3D worldPos) const;
+    QPoint tileCoordForMatrixCoord(QPoint matrixCoord) const;
 
 //    void setNeighbours(QPoint pos, TileNeighbours &result);
     void updateAllTiles();
-    QPoint tileCoordAtWorldPosShifted(QVector3D worldPos);
+    QPoint tileCoordAtWorldPosShifted(QVector3D worldPos) const;
     void updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY);
 
 private:
@@ -60,6 +78,9 @@ private:
     TileDescription m_topRight;
 
     QVector<TileDescription> m_tileMoveDesc;
+    int m_rowCount;
+    qreal m_tileSize;
+    QVector3D m_targetPosition;
 };
 
 #endif // TILEENGINE_H

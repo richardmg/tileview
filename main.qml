@@ -3,7 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick3D
 import QtQuick3D.Helpers
-import CustomGeometryExample
+
+import TileEngine
 
 Window {
     id: window
@@ -11,6 +12,10 @@ Window {
     height: 720
     visible: true
     color: "#848895"
+
+    TileEngine {
+
+    }
 
     View3D {
         id: v3d
