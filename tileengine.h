@@ -18,7 +18,6 @@ struct TileNeighbours
 
 struct Tile
 {
-    QQuick3DNode *node;
     QVector3D position;
     QPoint tileCoord;
     QPoint matrixCoord;
@@ -31,7 +30,7 @@ class TileView : public QQuick3DNode
     QML_ELEMENT
     Q_INTERFACES(QQmlParserStatus)
 
-    Q_PROPERTY(int rowCount READ rowCount WRITE setRowCount NOTIFY rowCountChanged)
+    Q_PROPERTY(int tileCount READ tileCount WRITE setTileCount NOTIFY tileCountChanged)
     Q_PROPERTY(qreal tileSize READ tileSize WRITE setTileSize NOTIFY tileSizeChanged)
     Q_PROPERTY(QVector3D center READ center WRITE setCenter NOTIFY centerChanged)
     Q_PROPERTY(QQmlComponent *delegate READ delegate WRITE setDelegate NOTIFY delegateChanged)
@@ -40,8 +39,8 @@ public:
     explicit TileView(QQuick3DNode *parent = nullptr);
     ~TileView() override;
 
-    int rowCount() const;
-    void setRowCount(int rowCount);
+    int tileCount() const;
+    void setTileCount(int tileCount);
 
     qreal tileSize() const;
     void setTileSize(qreal tileSize);
@@ -53,13 +52,14 @@ public:
     void setDelegate(QQmlComponent *delegate);
 
 signals:
-    void rowCountChanged();
+    void tileCountChanged();
     void tileSizeChanged();
     void centerChanged();
     void delegateChanged();
 
 public:
-    virtual void updateDelegateNodes(const QVector<Tile> &tiles);
+    virtual void recreateDelegates();
+    virtual void updateDelegates(const QVector<Tile> &tiles);
     virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
 
 protected:
@@ -78,7 +78,7 @@ private:
     void updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY);
 
 private:
-    int m_rowCount = 0;
+    int m_tileCount = 0;
     qreal m_tileSize = 100;
     QVector3D m_centerPosition;
 

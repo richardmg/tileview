@@ -20,7 +20,7 @@ QPoint TileView::mapPositionToMatrix(QVector3D worldPos) const
     const QPoint tileCoord = mapPositionToTileCoordinate(worldPos);
     const QPoint tileOffset = m_topRight.tileCoord - tileCoord;
 
-    if (tileOffset.x() >= 0 && tileOffset.y() >= 0 && tileOffset.x() <= m_rowCount && tileOffset.y() <= m_rowCount) {
+    if (tileOffset.x() >= 0 && tileOffset.y() >= 0 && tileOffset.x() <= m_tileCount && tileOffset.y() <= m_tileCount) {
         qmlWarning(this) << "worldPos is outside the current area covered by the viewport";
         return QPoint();
     }
@@ -33,11 +33,11 @@ QPoint TileView::mapPositionToMatrix(QVector3D worldPos) const
 QPoint TileView::mapMatrixCoordToTileCoord(QPoint matrixCoord) const
 {
     // Normalize matrix coord (as if the matrix were unshifted)
-    const int matrixXNorm = matrixPos(matrixCoord.x(), -m_topRight.matrixCoord.x() + (m_rowCount - 1));
-    const int matrixYNorm = matrixPos(matrixCoord.y(), -m_topRight.matrixCoord.y() + (m_rowCount - 1));
+    const int matrixXNorm = matrixPos(matrixCoord.x(), -m_topRight.matrixCoord.x() + (m_tileCount - 1));
+    const int matrixYNorm = matrixPos(matrixCoord.y(), -m_topRight.matrixCoord.y() + (m_tileCount - 1));
 
-    const int tileOffsetX = m_rowCount - matrixXNorm - 1;
-    const int tileOffsetY = m_rowCount - matrixYNorm - 1;
+    const int tileOffsetX = m_tileCount - matrixXNorm - 1;
+    const int tileOffsetY = m_tileCount - matrixYNorm - 1;
 
     const int tileX = m_topRight.tileCoord.x() - tileOffsetX;
     const int tileY = m_topRight.tileCoord.y() - tileOffsetY;
@@ -74,7 +74,7 @@ QPoint TileView::tileCoordinateShifted(QVector3D worldPos) const
  */
 int TileView::matrixPos(int startEdge, int edgeShifted) const
 {
-    return (m_rowCount + startEdge + (edgeShifted % m_rowCount)) % m_rowCount;
+    return (m_tileCount + startEdge + (edgeShifted % m_tileCount)) % m_tileCount;
 }
 
 //void TileEngine::setNeighbours(QPoint pos, ref TileNeighbours result)
@@ -100,54 +100,33 @@ void TileView::resetAllTiles()
     if (!isComponentComplete())
         return;
 
-    if (m_rowCount % 2 != 0) {
+    if (m_tileCount % 2 != 0) {
         qmlWarning(this) << "rowCount must be a multiple of 2";
-        m_rowCount = m_rowCount + 1;
+        m_tileCount = m_tileCount + 1;
     }
 
     // TODO: Take m_worldPos into account when calculating initial coordinates!
 
-    m_tilesToUpdate.resize(m_rowCount);
-    m_topRight.matrixCoord = QPoint(m_rowCount - 1, m_rowCount - 1);
-    m_topRight.tileCoord = QPoint((m_rowCount / 2) - 1, (m_rowCount / 2) - 1);
+    m_tilesToUpdate.resize(m_tileCount);
+    m_topRight.matrixCoord = QPoint(m_tileCount - 1, m_tileCount - 1);
+    m_topRight.tileCoord = QPoint((m_tileCount / 2) - 1, (m_tileCount / 2) - 1);
 
-    qDeleteAll(m_delegateNodes);
-    m_delegateNodes.clear();
+    recreateDelegates();
 
-    const int delegateCount = m_rowCount * m_rowCount;
-    m_delegateNodes.resize(delegateCount);
-
-    // Create all delegate items
-    for (int i = 0; i < delegateCount; ++i) {
-        QObject *obj = m_delegate->create();
-        QQuick3DNode *node = qobject_cast<QQuick3DNode *>(obj);
-        if (!node) {
-            qmlWarning(this) << "Delegate is not a Node";
-            delete node;
-            node = new QQuick3DNode();
-        }
-        node->setParentItem(this);
-        node->setParent(this);
-        node->setVisible(true);
-        m_delegateNodes.append(node);
-    }
-
-    //
-    for (int matrixY = 0; matrixY < m_rowCount; ++matrixY) {
-        for (int matrixX = 0; matrixX < m_rowCount; ++matrixX) {
+    for (int matrixY = 0; matrixY < m_tileCount; ++matrixY) {
+        for (int matrixX = 0; matrixX < m_tileCount; ++matrixX) {
             Tile &tile = m_tilesToUpdate[matrixX];
 
             tile.matrixCoord = QPoint(matrixX, matrixY);
-            tile.tileCoord = mapMatrixCoordToTileCoord(tile .matrixCoord);
-            tile.position = mapTileCoordToPosition(tile .tileCoord);
-//            tile.node =
+            tile.tileCoord = mapMatrixCoordToTileCoord(tile.matrixCoord);
+            tile.position = mapTileCoordToPosition(tile.tileCoord);
 
             // TODO: ensure that we m_tileMoveDesc was updated!
 
 //            setNeighbours(m_tileMoveDesc[matrixX].matrixCoord, ref m_tileMoveDesc[matrixX].neighbours);
         }
 
-        updateDelegateNodes(m_tilesToUpdate);
+        updateDelegates(m_tilesToUpdate);
 //        updateNeighbours(m_tileMoveDesc);
     }
 }
@@ -155,7 +134,7 @@ void TileView::resetAllTiles()
 void TileView::updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY)
 {
     int moveDirection = shifted > 0 ? 1 : -1;
-    int shiftCount = qMin(qAbs(shifted), m_rowCount);
+    int shiftCount = qMin(qAbs(shifted), m_tileCount);
     int shiftCountIncludingNeighbours = shiftCount;// + (neighbourCallback != null ? 1 : 0);
 
     for (int i = 0; i < shiftCountIncludingNeighbours; ++i) {
@@ -163,7 +142,7 @@ void TileView::updateTilesHelp(int shifted, int topRightX, int topRightY, bool u
         if (moveDirection < 0)
             matrixFrontX = matrixPos(matrixFrontX, 1);
 
-        for (int j = 0; j < m_rowCount; ++j) {
+        for (int j = 0; j < m_tileCount; ++j) {
             Tile &tile = m_tilesToUpdate[j];
 
             QPoint matrixCoord(matrixFrontX, matrixPos(topRightY, -j));
@@ -182,11 +161,52 @@ void TileView::updateTilesHelp(int shifted, int topRightX, int topRightY, bool u
         }
 
         if (i < shiftCount)
-            updateDelegateNodes(m_tilesToUpdate);
+            updateDelegates(m_tilesToUpdate);
 
 //        if (neighbourCallback != null)
 //            neighbourCallback(m_tileMoveDesc);
     }
+}
+
+void TileView::recreateDelegates()
+{
+    qDeleteAll(m_delegateNodes);
+    m_delegateNodes.clear();
+
+    const int delegateCount = m_tileCount * m_tileCount;
+    m_delegateNodes.resize(delegateCount);
+
+    // Create all delegate items
+    for (int i = 0; i < delegateCount; ++i) {
+        QObject *obj = m_delegate->create();
+        QQuick3DNode *node = qobject_cast<QQuick3DNode *>(obj);
+        if (!node) {
+            qmlWarning(this) << "Delegate is not a Node";
+            delete node;
+            node = new QQuick3DNode();
+        }
+        node->setParentItem(this);
+        node->setParent(this);
+        node->setVisible(true);
+        m_delegateNodes.append(node);
+    }
+}
+
+void TileView::updateDelegates(const QVector<Tile> &tiles)
+{
+    // NOTE: Remember to take scale into account!
+
+    qDebug() << "Update tiles:";
+    for (const auto &tile : qAsConst(tiles)) {
+        qDebug() << "   tile:" << tile.tileCoord << "pos:" << tile.position << "matrix coord:" << tile.matrixCoord;
+        int index = tile.matrixCoord.x() + (tile.matrixCoord.y() * m_tileCount);
+        QQuick3DNode *node = m_delegateNodes[index];
+    }
+}
+
+void TileView::updateNeighbours(const QVector<TileNeighbours> &neighbours)
+{
+    qDebug() << __FUNCTION__;
 }
 
 void TileView::componentComplete()
@@ -205,21 +225,6 @@ TileView::TileView(QQuick3DNode *parent)
 TileView::~TileView()
 {
     qDeleteAll(m_delegateNodes);
-}
-
-void TileView::updateDelegateNodes(const QVector<Tile> &tiles)
-{
-    // NOTE: Remember to take scale into account!
-
-    qDebug() << "Update tiles:";
-    for (const auto &tile : qAsConst(tiles)) {
-        qDebug() << "   tile:" << tile.tileCoord << "pos:" << tile.position << "matrix coord:" << tile.matrixCoord;
-    }
-}
-
-void TileView::updateNeighbours(const QVector<TileNeighbours> &neighbours)
-{
-    qDebug() << __FUNCTION__;
 }
 
 QQmlComponent *TileView::delegate() const
@@ -243,25 +248,25 @@ QVector3D TileView::center() const
     return m_centerPosition;
 }
 
-int TileView::rowCount() const
+int TileView::tileCount() const
 {
-    return m_rowCount;
+    return m_tileCount;
+}
+
+void TileView::setTileCount(int tileCount)
+{
+    if (m_tileCount == tileCount)
+        return;
+
+    m_tileCount = tileCount;
+    resetAllTiles();
+
+    emit tileCountChanged();
 }
 
 qreal TileView::tileSize() const
 {
     return m_tileSize;
-}
-
-void TileView::setRowCount(int rowCount)
-{
-    if (m_rowCount == rowCount)
-        return;
-
-    m_rowCount = rowCount;
-    resetAllTiles();
-
-    emit rowCountChanged();
 }
 
 void TileView::setTileSize(qreal tileSize)
