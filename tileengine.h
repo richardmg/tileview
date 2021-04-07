@@ -18,6 +18,7 @@ struct TileNeighbours
 
 struct TileDescription
 {
+    QQuick3DNode *node;
     QVector3D worldPos;
     QPoint tileCoord;
     QPoint matrixCoord;
@@ -73,12 +74,9 @@ private:
     QPoint tileCoordForMatrixCoord(QPoint matrixCoord) const;
 
 //    void setNeighbours(QPoint pos, TileNeighbours &result);
-    void updateAllTiles();
+    void resetAllTiles();
     QPoint tileCoordAtWorldPosShifted(QVector3D worldPos) const;
     void updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY);
-
-    void createDelegates();
-    void delegateDelegates();
 
 private:
     int m_rowCount = 0;

@@ -83,7 +83,7 @@ Window {
         }
 
         Model {
-//            scale: Qt.vector3d(100, 100, 100)
+            scale: Qt.vector3d(0.1, 0.1, 0.1)
             source: "#Cube"
 //            geometry: ExampleTriangleGeometry { uv: true }
             materials: [

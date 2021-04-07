@@ -71,8 +71,44 @@ int TileView::matrixPos(int startEdge, int edgeShifted) const
 //    if (onRightEdge) result.right.set(-1, -1); else result.right.set(matrixPos(pos.x, 1), pos.y);
 //}
 
-void TileView::updateAllTiles()
+void TileView::resetAllTiles()
 {
+    if (!isComponentComplete())
+        return;
+
+    if (m_rowCount % 2 != 0) {
+        qmlWarning(this) << "rowCount must be a multiple of 2";
+        m_rowCount = m_rowCount + 1;
+    }
+
+    // TODO: Take m_worldPos into account when calculating initial coordinates!
+
+    m_tileMoveDesc.resize(m_rowCount);
+    m_topRight.matrixCoord = QPoint(m_rowCount - 1, m_rowCount - 1);
+    m_topRight.tileCoord = QPoint((m_rowCount / 2) - 1, (m_rowCount / 2) - 1);
+
+    qDeleteAll(m_delegateNodes);
+    m_delegateNodes.clear();
+
+    const int delegateCount = m_rowCount * m_rowCount;
+    m_delegateNodes.resize(delegateCount);
+
+    // Create all delegate items
+    for (int i = 0; i < delegateCount; ++i) {
+        QObject *obj = m_delegate->create();
+        QQuick3DNode *node = qobject_cast<QQuick3DNode *>(obj);
+        if (!node) {
+            qmlWarning(this) << "Delegate is not a Node";
+            delete node;
+            node = new QQuick3DNode();
+        }
+        node->setParentItem(this);
+        node->setParent(this);
+        node->setVisible(true);
+        m_delegateNodes.append(node);
+    }
+
+    //
     for (int matrixY = 0; matrixY < m_rowCount; ++matrixY) {
         for (int matrixX = 0; matrixX < m_rowCount; ++matrixX) {
             TileDescription &desc = m_tileMoveDesc[matrixX];
@@ -135,24 +171,10 @@ void TileView::updateTilesHelp(int shifted, int topRightX, int topRightY, bool u
     }
 }
 
-void TileView::delegateDelegates()
+void TileView::componentComplete()
 {
-
-}
-
-void TileView::createDelegates()
-{
-    for (int i = 0; i < m_rowCount * m_rowCount; ++i) {
-        QObject *obj = m_delegate->create();
-        QQuick3DNode *node = qobject_cast<QQuick3DNode *>(obj);
-        if (!node) {
-            qmlWarning(this) << "Delegate is not a Node";
-            delete node;
-            node = new QQuick3DNode();
-        }
-        node->setParentItem(this);
-        m_delegateNodes.append(node);
-    }
+    QQuick3DNode::componentComplete();
+    resetAllTiles();
 }
 
 // *******************************************************************
@@ -164,7 +186,7 @@ TileView::TileView(QQuick3DNode *parent)
 
 TileView::~TileView()
 {
-    delegateDelegates();
+    qDeleteAll(m_delegateNodes);
 }
 
 QVector3D TileView::worldPosAtTileCoord(QPoint tileCoord) const
@@ -206,25 +228,9 @@ void TileView::setDelegate(QQmlComponent *delegate)
         return;
 
     m_delegate = delegate;
+    resetAllTiles();
+
     emit delegateChanged();
-}
-
-void TileView::componentComplete()
-{
-    QQuick3DNode::componentComplete();
-
-    if (m_rowCount % 2 != 0) {
-        qmlWarning(this) << "rowCount must be a multiple of 2";
-        m_rowCount = m_rowCount + 1;
-    }
-
-    // TODO: Take m_worldPos into account when calculating initial coordinates!
-
-    m_tileMoveDesc.resize(m_rowCount);
-    m_topRight.matrixCoord = QPoint(m_rowCount - 1, m_rowCount - 1);
-    m_topRight.tileCoord = QPoint((m_rowCount / 2) - 1, (m_rowCount / 2) - 1);
-
-    updateAllTiles();
 }
 
 QVector3D TileView::center() const
@@ -248,6 +254,8 @@ void TileView::setRowCount(int rowCount)
         return;
 
     m_rowCount = rowCount;
+    resetAllTiles();
+
     emit rowCountChanged();
 }
 
