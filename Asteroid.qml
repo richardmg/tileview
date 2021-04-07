@@ -2,13 +2,13 @@ import QtQuick
 import QtQuick3D
 
 Model {
-    source: "#Cube"
-    scale: Qt.vector3d(0.05, 0.05, 0.05)
+    source: "asteroid.mesh"
+    scale: Qt.vector3d(3.1, 3.1, 3.1)
 
     materials: [ PrincipledMaterial {
-            metalness: 0.5
+            metalness: 1.0
             roughness: 0.0
-            specularAmount: 1.0
+            specularAmount: 0.5
             opacity: 1.0
             baseColorMap: Texture { source: "maps/metallic/basecolor.jpg" }
         }

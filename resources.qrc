@@ -3,5 +3,7 @@
         <file>main.qml</file>
         <file>qt_logo_rect.png</file>
         <file>Star.qml</file>
+        <file>Asteroid.qml</file>
+        <file>asteroid.mesh</file>
     </qresource>
 </RCC>

@@ -47,15 +47,39 @@ Window {
     Node {
         id: scene
 
+//        TileView {
+//            center: personCamera.position
+//            tileSize: Qt.vector3d(50, 50, 50)
+//            tileCount: Qt.vector3d(6, 6, 6)
+
+//            delegate: Asteroid {
+//                SequentialAnimation on eulerRotation {
+//                    loops: Animation.Infinite
+//                    PropertyAnimation {
+//                        duration: Math.random(10000) + 10000
+//                        from: Qt.vector3d(0, 0, 0)
+//                        to: Qt.vector3d(360, 360, 360)
+//                    }
+//                }
+//            }
+//        }
+
         TileView {
             center: personCamera.position
             tileSize: Qt.vector3d(500, 500, 500)
-            tileCount: Qt.vector3d(3, 3, 3)
+            tileCount: Qt.vector3d(6, 6, 6)
 
             delegate: Node {
                 Star {
-                    scale: Qt.vector3d(0.03, 0.03, 0.03)
                     instancing: randomInstancing
+                    SequentialAnimation on eulerRotation {
+                        loops: Animation.Infinite
+                        PropertyAnimation {
+                            duration: Math.random(10000) + 10000
+                            from: Qt.vector3d(0, 0, 0)
+                            to: Qt.vector3d(360, 360, 360)
+                        }
+                    }
                 }
                 RandomInstancing {
                     id: randomInstancing
