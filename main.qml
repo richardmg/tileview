@@ -19,8 +19,13 @@ Window {
         camera: personCamera
         importScene: scene
         environment: SceneEnvironment {
+//            backgroundMode: SceneEnvironment.SkyBox
             clearColor: Qt.rgba(0.1, 0.1, 0.1, 1.0)
             backgroundMode: SceneEnvironment.Color
+            probeOrientation: Qt.vector3d(0, -90, 0)
+            lightProbe: Texture {
+                source: "maps/OpenfootageNET_garage-1024.hdr"
+            }
         }
     }
 
@@ -55,10 +60,10 @@ Window {
                     }
                 ]
 
-//                PointLight {
-//                    color: Qt.rgba(1.0, 0.0, 0.0, 1.0)
-////                    ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
-//                }
+                PointLight {
+                    color: Qt.rgba(1.0, 1.0, 1.0, 1.0)
+//                    ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
+                }
             }
         }
 
@@ -75,15 +80,9 @@ Window {
             tileSize: Qt.vector3d(80, 80, 80)
             tileCount: Qt.vector3d(8, 8, 8)
 
-            delegate: Model {
-                source: "#Cube"
-                scale: Qt.vector3d(0.05, 0.05, 0.05)
-                materials: [
-                    DefaultMaterial {
-                        diffuseColor: "yellow"
-                    }
-                ]
-//                TileView.onTileChanged: print("new tile pos:", TileView.tile)
+            delegate: Star {
+                scale: Qt.vector3d(0.2, 0.2, 0.2)
+     //      someProp: TileView.onTileChanged: print("new tile pos:", TileView.tile)
             }
         }
 

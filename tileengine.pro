@@ -18,7 +18,8 @@ HEADERS += \
     tileengine.h
 
 RESOURCES += \
-    resources.qrc
+    resources.qrc \
+    materials.qrc
 
 OTHER_FILES += \
     doc/src/*.*
