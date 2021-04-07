@@ -24,7 +24,7 @@ struct TileDescription
     TileNeighbours neighbours;
 };
 
-class TileEngine : public QObject, public QQmlParserStatus
+class TileView : public QQuick3DNode
 {
     Q_OBJECT
     QML_ELEMENT
@@ -32,12 +32,12 @@ class TileEngine : public QObject, public QQmlParserStatus
 
     Q_PROPERTY(int rowCount READ rowCount WRITE setRowCount NOTIFY rowCountChanged)
     Q_PROPERTY(qreal tileSize READ tileSize WRITE setTileSize NOTIFY tileSizeChanged)
-    Q_PROPERTY(QVector3D targetPosition READ targetPosition WRITE setTargetPosition NOTIFY targetPositionChanged)
+    Q_PROPERTY(QVector3D center READ center WRITE setCenter NOTIFY centerChanged)
     Q_PROPERTY(QQmlComponent *delegate READ delegate WRITE setDelegate NOTIFY delegateChanged)
 
 public:
-    explicit TileEngine(QObject *parent = nullptr);
-    ~TileEngine() override;
+    explicit TileView(QQuick3DNode *parent = nullptr);
+    ~TileView() override;
 
     Q_INVOKABLE QVector3D worldPosAtTileCoord(QPoint tileCoord) const;
     Q_INVOKABLE QPoint tileCoordAtWorldPos(QVector3D worldPos) const;
@@ -48,8 +48,8 @@ public:
     qreal tileSize() const;
     void setTileSize(qreal tileSize);
 
-    QVector3D targetPosition() const;
-    void setTargetPosition(QVector3D position);
+    QVector3D center() const;
+    void setCenter(QVector3D center);
 
     QQmlComponent* delegate() const;
     void setDelegate(QQmlComponent *delegate);
@@ -57,7 +57,7 @@ public:
 signals:
     void rowCountChanged();
     void tileSizeChanged();
-    void targetPositionChanged();
+    void centerChanged();
     void delegateChanged();
 
 public:
@@ -65,7 +65,6 @@ public:
     virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
 
 protected:
-    void classBegin() override {};
     void componentComplete() override;
 
 private:
@@ -77,12 +76,14 @@ private:
     void updateAllTiles();
     QPoint tileCoordAtWorldPosShifted(QVector3D worldPos) const;
     void updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY);
+
     void createDelegates();
+    void delegateDelegates();
 
 private:
     int m_rowCount = 0;
     qreal m_tileSize = 100;
-    QVector3D m_targetPosition;
+    QVector3D m_centerPosition;
 
     QPoint m_shiftedTileCoord;
     QPoint m_prevShiftedTileCoord;
@@ -91,7 +92,6 @@ private:
     QVector<TileDescription> m_tileMoveDesc;
     QVector<QQuick3DNode *> m_delegateNodes;
 
-    bool m_componentComplete = false;
     QQmlComponent *m_delegate;
 };
 

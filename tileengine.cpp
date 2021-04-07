@@ -2,7 +2,7 @@
 
 #include <QtMath>
 
-QPoint TileEngine::matrixCoordForWorldPos(QVector3D worldPos) const
+QPoint TileView::matrixCoordForWorldPos(QVector3D worldPos) const
 {
     const QPoint tileCoord = tileCoordAtWorldPos(worldPos);
     const QPoint tileOffset = m_topRight.tileCoord - tileCoord;
@@ -17,7 +17,7 @@ QPoint TileEngine::matrixCoordForWorldPos(QVector3D worldPos) const
     return QPoint(matrixX, matrixY);
 }
 
-QPoint TileEngine::tileCoordForMatrixCoord(QPoint matrixCoord) const
+QPoint TileView::tileCoordForMatrixCoord(QPoint matrixCoord) const
 {
     // Normalize matrix coord (as if the matrix were unshifted)
     const int matrixXNorm = matrixPos(matrixCoord.x(), -m_topRight.matrixCoord.x() + (m_rowCount - 1));
@@ -48,7 +48,7 @@ QPoint TileEngine::tileCoordForMatrixCoord(QPoint matrixCoord) const
  * position the matrix if you shift it edgeShifted in one direction. This might mean that
  * it wraps around on the other side of the matrix.
  */
-int TileEngine::matrixPos(int startEdge, int edgeShifted) const
+int TileView::matrixPos(int startEdge, int edgeShifted) const
 {
     return (m_rowCount + startEdge + (edgeShifted % m_rowCount)) % m_rowCount;
 }
@@ -71,7 +71,7 @@ int TileEngine::matrixPos(int startEdge, int edgeShifted) const
 //    if (onRightEdge) result.right.set(-1, -1); else result.right.set(matrixPos(pos.x, 1), pos.y);
 //}
 
-void TileEngine::updateAllTiles()
+void TileView::updateAllTiles()
 {
     for (int matrixY = 0; matrixY < m_rowCount; ++matrixY) {
         for (int matrixX = 0; matrixX < m_rowCount; ++matrixX) {
@@ -90,7 +90,7 @@ void TileEngine::updateAllTiles()
     }
 }
 
-QPoint TileEngine::tileCoordAtWorldPosShifted(QVector3D worldPos) const
+QPoint TileView::tileCoordAtWorldPosShifted(QVector3D worldPos) const
 {
     // Note: tileCoordAtWorldPosShifted is an internal concept, and is only used to
     // determine when to update the tile matrix. We use tileCoordAtWorldPosShifted to
@@ -101,7 +101,7 @@ QPoint TileEngine::tileCoordAtWorldPosShifted(QVector3D worldPos) const
     return tileCoordAtWorldPos(shifted);
 }
 
-void TileEngine::updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY)
+void TileView::updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY)
 {
     int moveDirection = shifted > 0 ? 1 : -1;
     int shiftCount = qMin(qAbs(shifted), m_rowCount);
@@ -135,66 +135,72 @@ void TileEngine::updateTilesHelp(int shifted, int topRightX, int topRightY, bool
     }
 }
 
-void TileEngine::createDelegates()
+void TileView::delegateDelegates()
 {
 
-    for (int matrixY = 0; matrixY < m_rowCount; ++matrixY) {
-        for (int matrixX = 0; matrixX < m_rowCount; ++matrixX) {
-            TileDescription &desc = m_tileMoveDesc[matrixX];
+}
 
-            desc.matrixCoord = QPoint(matrixX, matrixY);
-            desc.tileCoord = tileCoordForMatrixCoord(desc.matrixCoord);
-            desc.worldPos = worldPosAtTileCoord(desc.tileCoord);
-            // TODO: ensure that we m_tileMoveDesc was updated!
-
-//            setNeighbours(m_tileMoveDesc[matrixX].matrixCoord, ref m_tileMoveDesc[matrixX].neighbours);
+void TileView::createDelegates()
+{
+    for (int i = 0; i < m_rowCount * m_rowCount; ++i) {
+        QObject *obj = m_delegate->create();
+        QQuick3DNode *node = qobject_cast<QQuick3DNode *>(obj);
+        if (!node) {
+            qmlWarning(this) << "Delegate is not a Node";
+            delete node;
+            node = new QQuick3DNode();
         }
+        node->setParentItem(this);
+        m_delegateNodes.append(node);
     }
 }
 
 // *******************************************************************
 
-TileEngine::TileEngine(QObject *parent)
-    : QObject(parent)
+TileView::TileView(QQuick3DNode *parent)
+    : QQuick3DNode(parent)
 {
 }
 
-TileEngine::~TileEngine()
+TileView::~TileView()
 {
+    delegateDelegates();
 }
 
-QVector3D TileEngine::worldPosAtTileCoord(QPoint tileCoord) const
+QVector3D TileView::worldPosAtTileCoord(QPoint tileCoord) const
 {
     // NB: we here assume that the tile engine is aligned with x, z rather than x, y
     return QVector3D(tileCoord.x() * m_tileSize, 0, tileCoord.y() * m_tileSize);
 }
 
-QPoint TileEngine::tileCoordAtWorldPos(QVector3D worldPos) const
+QPoint TileView::tileCoordAtWorldPos(QVector3D worldPos) const
 {
     const int tileX = int(qFloor(worldPos.x() / m_tileSize));
     const int tileY = int(qFloor(worldPos.z() / m_tileSize));
     return QPoint(tileX, tileY);
 }
 
-void TileEngine::updateDelegateNodes(const QVector<TileDescription> &tiles)
+void TileView::updateDelegateNodes(const QVector<TileDescription> &tiles)
 {
+    // NOTE: Remember to take scale into account!
+
     qDebug() << "Update tiles:";
     for (const auto &tile : qAsConst(tiles)) {
         qDebug() << "   tile:" << tile.tileCoord << "pos:" << tile.worldPos << "matrix coord:" << tile.matrixCoord;
     }
 }
 
-void TileEngine::updateNeighbours(const QVector<TileNeighbours> &neighbours)
+void TileView::updateNeighbours(const QVector<TileNeighbours> &neighbours)
 {
     qDebug() << __FUNCTION__;
 }
 
-QQmlComponent *TileEngine::delegate() const
+QQmlComponent *TileView::delegate() const
 {
     return m_delegate;
 }
 
-void TileEngine::setDelegate(QQmlComponent *delegate)
+void TileView::setDelegate(QQmlComponent *delegate)
 {
     if (m_delegate == delegate)
         return;
@@ -203,8 +209,10 @@ void TileEngine::setDelegate(QQmlComponent *delegate)
     emit delegateChanged();
 }
 
-void TileEngine::componentComplete()
+void TileView::componentComplete()
 {
+    QQuick3DNode::componentComplete();
+
     if (m_rowCount % 2 != 0) {
         qmlWarning(this) << "rowCount must be a multiple of 2";
         m_rowCount = m_rowCount + 1;
@@ -217,26 +225,24 @@ void TileEngine::componentComplete()
     m_topRight.tileCoord = QPoint((m_rowCount / 2) - 1, (m_rowCount / 2) - 1);
 
     updateAllTiles();
-
-    m_componentComplete = true;
 }
 
-QVector3D TileEngine::targetPosition() const
+QVector3D TileView::center() const
 {
-    return m_targetPosition;
+    return m_centerPosition;
 }
 
-int TileEngine::rowCount() const
+int TileView::rowCount() const
 {
     return m_rowCount;
 }
 
-qreal TileEngine::tileSize() const
+qreal TileView::tileSize() const
 {
     return m_tileSize;
 }
 
-void TileEngine::setRowCount(int rowCount)
+void TileView::setRowCount(int rowCount)
 {
     if (m_rowCount == rowCount)
         return;
@@ -245,7 +251,7 @@ void TileEngine::setRowCount(int rowCount)
     emit rowCountChanged();
 }
 
-void TileEngine::setTileSize(qreal tileSize)
+void TileView::setTileSize(qreal tileSize)
 {
     if (qFuzzyCompare(m_tileSize, tileSize))
         return;
@@ -254,19 +260,19 @@ void TileEngine::setTileSize(qreal tileSize)
     emit tileSizeChanged();
 }
 
-void TileEngine::setTargetPosition(QVector3D position)
+void TileView::setCenter(QVector3D center)
 {
-    if (position == m_targetPosition)
+    if (center == m_centerPosition)
         return;
 
-    const QVector3D prevWorldPos = m_targetPosition;
-    m_targetPosition = position;
+    const QVector3D prevCenterPosition = m_centerPosition;
+    m_centerPosition = center;
 
-    if (!m_componentComplete)
+    if (!isComponentComplete())
         return;
 
-    const QPoint prevShiftedTileCoord = tileCoordAtWorldPosShifted(prevWorldPos);
-    const QPoint shiftedTileCoord = tileCoordAtWorldPosShifted(position);
+    const QPoint prevShiftedTileCoord = tileCoordAtWorldPosShifted(prevCenterPosition);
+    const QPoint shiftedTileCoord = tileCoordAtWorldPosShifted(m_centerPosition);
 
     if (shiftedTileCoord == prevShiftedTileCoord)
         return;
@@ -285,5 +291,5 @@ void TileEngine::setTargetPosition(QVector3D position)
     if (shiftedTiles.y() != 0)
         updateTilesHelp(shiftedTiles.y(), m_topRight.matrixCoord.y(), m_topRight.matrixCoord.x(), true);
 
-    emit targetPositionChanged();
+    emit centerChanged();
 }

@@ -55,6 +55,21 @@ Window {
             eulerRotation: Qt.vector3d(-90, 0, 0)
         }
 
+        TileView {
+            center: Qt.vector3d(0, 0, 0) // personCamera.position // local or world
+            tileSize: 100
+            rowCount: 4
+            delegate: Model {
+                source: "#Cube"
+                eulerRotation: Qt.vector3d(-90, 0, 0)
+                materials: [
+                    DefaultMaterial {
+                        diffuseColor: "yellow"
+                    }
+                ]
+            }
+        }
+
         DirectionalLight {
             position: Qt.vector3d(-500, 500, -100)
             color: Qt.rgba(0.4, 0.2, 0.6, 1.0)
@@ -83,15 +98,6 @@ Window {
 //                    lineWidth: 3
                 }
             ]
-        }
-
-        TileEngine {
-            targetPosition: Qt.vector3d(0, 0, 0) // personCamera.position // local or world
-            tileSize: 100
-            rowCount: 4
-//            delegate: Model {
-
-//            }
         }
     }
 
