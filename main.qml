@@ -37,10 +37,11 @@ Window {
 
         PerspectiveCamera {
             id: personCamera
-            position: Qt.vector3d(0, 0, 600)
+            position: Qt.vector3d(0, 0, 0)
             Model {
                 source: "#Cone"
-                eulerRotation: Qt.vector3d(-90, 0, 0)
+                scale: Qt.vector3d(0.1, 0.1, 0.1)
+//                eulerRotation: Qt.vector3d(-90, 0, 0)
                 materials: [
                     DefaultMaterial {
                         diffuseColor: "red"
@@ -62,7 +63,7 @@ Window {
 
             delegate: Model {
                 source: "#Cube"
-                scale: Qt.vector3d(0.5, 0.5, 0.5)
+                scale: Qt.vector3d(0.5, 0.1, 0.5)
                 materials: [
                     DefaultMaterial {
                         diffuseColor: "yellow"

@@ -67,15 +67,15 @@ protected:
 
 private:
     QVector3D mapTileCoordToPosition(QPoint tileCoord) const;
-    QPoint mapPositionToTileCoordinate(QVector3D worldPos) const;
-    int matrixPos(int startEdge, int edgeShifted) const;
-    QPoint mapPositionToMatrix(QVector3D worldPos) const;
+    QPoint mapPositionToTileCoord(QVector3D position) const;
+    int matrixCoordShifted(int startCoord, int shiftCount) const;
+    QPoint mapPositionToMatrixCoord(QVector3D position) const;
     QPoint mapMatrixCoordToTileCoord(QPoint matrixCoord) const;
 
 //    void setNeighbours(QPoint pos, TileNeighbours &result);
     void resetAllTiles();
-    QPoint tileCoordinateShifted(QVector3D worldPos) const;
-    void updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY);
+    QPoint mapPositionToTileCoordShifted(QVector3D position) const;
+    void updateTiles(int shifted, int cornerX, int cornerY, bool updateAxisY);
 
 private:
     int m_tileCount = 0;
@@ -84,7 +84,7 @@ private:
 
     QPoint m_shiftedTileCoord;
     QPoint m_prevShiftedTileCoord;
-    Tile m_topRight;
+    Tile m_cornerTile;
 
     QVector<Tile> m_tilesToUpdate;
     QVector<QQuick3DNode *> m_delegateNodes;
