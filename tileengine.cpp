@@ -315,19 +315,6 @@ void TileView::setTileCount(const QVector3D &tileCount)
     if (m_tileCount == tileCount)
         return;
 
-    if (int(m_tileCount.x()) % 2 != 0) {
-        qmlWarning(this) << "tileCount.x must be a multiple of 2";
-        return;
-    }
-    if (int(m_tileCount.y()) % 2 != 0) {
-        qmlWarning(this) << "tileCount.y must be a multiple of 2";
-        return;
-    }
-    if (int(m_tileCount.z()) % 2 != 0) {
-        qmlWarning(this) << "tileCount.z must be a multiple of 2";
-        return;
-    }
-
     m_tileCount = tileCount;
     resetAllTiles();
 
