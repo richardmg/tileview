@@ -234,8 +234,6 @@ void TileEngine::setTargetPosition(QVector3D worldPos)
     if (!m_componentComplete)
         return;
 
-    qDebug() << __FUNCTION__ << worldPos << m_rowCount << m_tileSize;
-
     const QPoint prevShiftedTileCoord = tileCoordAtWorldPosShifted(prevWorldPos);
     const QPoint shiftedTileCoord = tileCoordAtWorldPosShifted(worldPos);
 
