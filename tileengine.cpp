@@ -4,14 +4,17 @@
 
 QVector3D TileView::mapTileCoordToPosition(QVector3D tileCoord) const
 {
-    return tileCoord * m_tileSize;
+    const qreal coordX = m_tileCount.x() > 1 ? tileCoord.x() : 0;
+    const qreal coordY = m_tileCount.y() > 1 ? tileCoord.y() : 0;
+    const qreal coordZ = m_tileCount.z() > 1 ? tileCoord.z() : 0;
+    return QVector3D(coordX, coordY, coordZ) * m_tileSize;
 }
 
 QVector3D TileView::mapPositionToTileCoord(QVector3D position) const
 {
-    const int tileX = int(qFloor(position.x() / m_tileSize));
-    const int tileY = int(qFloor(position.y() / m_tileSize));
-    const int tileZ = int(qFloor(position.z() / m_tileSize));
+    const int tileX = m_tileCount.x() > 1 ? int(qFloor(position.x() / m_tileSize)) : 0;
+    const int tileY = m_tileCount.y() > 1 ? int(qFloor(position.y() / m_tileSize)) : 0;
+    const int tileZ = m_tileCount.z() > 1 ? int(qFloor(position.z() / m_tileSize)) : 0;
     return QVector3D(tileX, tileY, tileZ);
 }
 
@@ -354,11 +357,11 @@ void TileView::setCenter(const QVector3D &center)
 
     const QVector3D shiftedTiles = newTileCoord - oldTileCoord;
 
-    if (shiftedTiles.x() != 0)
+    if (shiftedTiles.x() != 0 && m_tileCount.x() > 1)
         shiftMatrixAlongX(shiftedTiles.x());
-    if (shiftedTiles.y() != 0)
+    if (shiftedTiles.y() != 0 && m_tileCount.y() > 1)
         shiftMatrixAlongY(shiftedTiles.y());
-    if (shiftedTiles.z() != 0)
+    if (shiftedTiles.z() != 0 && m_tileCount.z() > 1)
         shiftMatrixAlongZ(shiftedTiles.z());
 
     emit centerChanged();
