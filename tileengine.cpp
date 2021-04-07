@@ -174,7 +174,7 @@ void TileView::recreateDelegates()
     m_delegateNodes.clear();
 
     const int delegateCount = m_tileCount * m_tileCount;
-    m_delegateNodes.resize(delegateCount);
+    m_delegateNodes.reserve(delegateCount);
 
     // Create all delegate items
     for (int i = 0; i < delegateCount; ++i) {
@@ -194,13 +194,11 @@ void TileView::recreateDelegates()
 
 void TileView::updateDelegates(const QVector<Tile> &tiles)
 {
-    // NOTE: Remember to take scale into account!
-
-    qDebug() << "Update tiles:";
+    // NOTE: Should I take scale into account?
     for (const auto &tile : qAsConst(tiles)) {
-        qDebug() << "   tile:" << tile.tileCoord << "pos:" << tile.position << "matrix coord:" << tile.matrixCoord;
         int index = tile.matrixCoord.x() + (tile.matrixCoord.y() * m_tileCount);
         QQuick3DNode *node = m_delegateNodes[index];
+        node->setPosition(tile.position);
     }
 }
 
