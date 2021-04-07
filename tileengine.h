@@ -23,7 +23,7 @@ class TileView : public QQuick3DNode
     Q_INTERFACES(QQmlParserStatus)
 
     Q_PROPERTY(QVector3D tileCount READ tileCount WRITE setTileCount NOTIFY tileCountChanged)
-    Q_PROPERTY(qreal tileSize READ tileSize WRITE setTileSize NOTIFY tileSizeChanged)
+    Q_PROPERTY(QVector3D tileSize READ tileSize WRITE setTileSize NOTIFY tileSizeChanged)
     Q_PROPERTY(QVector3D center READ center WRITE setCenter NOTIFY centerChanged)
     Q_PROPERTY(QQmlComponent *delegate READ delegate WRITE setDelegate NOTIFY delegateChanged)
 
@@ -34,8 +34,8 @@ public:
     QVector3D tileCount() const;
     void setTileCount(const QVector3D &tileCount);
 
-    qreal tileSize() const;
-    void setTileSize(qreal tileSize);
+    QVector3D tileSize() const;
+    void setTileSize(QVector3D tileSize);
 
     QVector3D center() const;
     void setCenter(const QVector3D &center);
@@ -79,7 +79,7 @@ private:
 
 private:
     QVector3D m_tileCount;
-    qreal m_tileSize = 100;
+    QVector3D m_tileSize;
     QVector3D m_centerPosition;
 
     QPoint m_shiftedTileCoord;

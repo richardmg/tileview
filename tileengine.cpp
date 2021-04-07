@@ -12,9 +12,9 @@ QVector3D TileView::mapTileCoordToPosition(QVector3D tileCoord) const
 
 QVector3D TileView::mapPositionToTileCoord(QVector3D position) const
 {
-    const int tileX = m_tileCount.x() > 1 ? int(qFloor(position.x() / m_tileSize)) : 0;
-    const int tileY = m_tileCount.y() > 1 ? int(qFloor(position.y() / m_tileSize)) : 0;
-    const int tileZ = m_tileCount.z() > 1 ? int(qFloor(position.z() / m_tileSize)) : 0;
+    const int tileX = m_tileCount.x() > 1 ? int(qFloor(position.x() / m_tileSize.x())) : 0;
+    const int tileY = m_tileCount.y() > 1 ? int(qFloor(position.y() / m_tileSize.y())) : 0;
+    const int tileZ = m_tileCount.z() > 1 ? int(qFloor(position.z() / m_tileSize.z())) : 0;
     return QVector3D(tileX, tileY, tileZ);
 }
 
@@ -53,8 +53,8 @@ QVector3D TileView::mapPositionToTileCoordShifted(QVector3D position) const
     // determine when to update the tile matrix. We use tileCoordinateShifted to
     // shift the position half a tile north-east to roll the matrix
     // when the user passes the center of a tile, rather than at the edge.
-    const qreal offset = qreal(m_tileSize / 2.);
-    const QVector3D shifted(position.x() + offset, position.y() + offset, position.z() + offset);
+    const QVector3D offset = m_tileSize / 2.;
+    const QVector3D shifted(position + offset);
     return mapPositionToTileCoord(shifted);
 }
 
@@ -251,9 +251,9 @@ void TileView::updateDelegate(const Tile &tile)
             + (tile.matrixCoord.z() * int(m_tileCount.x()) * int(m_tileCount.y()));
     QQuick3DNode *node = m_delegateNodes[index];
 
-    const QVector3D centerVector((int(m_tileCount.x()) - 1) * m_tileSize / 2,
-                                 (int(m_tileCount.y()) - 1) * m_tileSize / 2,
-                                 (int(m_tileCount.z()) - 1) * m_tileSize / 2);
+    const QVector3D centerVector((int(m_tileCount.x()) - 1) * m_tileSize.x() / 2,
+                                 (int(m_tileCount.y()) - 1) * m_tileSize.y() / 2,
+                                 (int(m_tileCount.z()) - 1) * m_tileSize.z() / 2);
     node->setPosition(tile.position - centerVector);
     getAttachedObject(node)->setTile(tile.tileCoord);
 }
@@ -299,7 +299,6 @@ void TileView::setDelegate(QQmlComponent *delegate)
 
     m_delegate = delegate;
     resetAllTiles();
-
     emit delegateChanged();
 }
 
@@ -320,18 +319,17 @@ void TileView::setTileCount(const QVector3D &tileCount)
 
     m_tileCount = tileCount;
     resetAllTiles();
-
     emit tileCountChanged();
 }
 
-qreal TileView::tileSize() const
+QVector3D TileView::tileSize() const
 {
     return m_tileSize;
 }
 
-void TileView::setTileSize(qreal tileSize)
+void TileView::setTileSize(QVector3D tileSize)
 {
-    if (qFuzzyCompare(m_tileSize, tileSize))
+    if (m_tileSize == tileSize)
         return;
 
     m_tileSize = tileSize;
