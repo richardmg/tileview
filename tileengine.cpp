@@ -196,10 +196,13 @@ void TileView::recreateDelegates()
 void TileView::updateDelegates(const QVector<Tile> &tiles)
 {
     // NOTE: Should I take scale into account?
+    const qreal centerDistance = (m_tileCount - 1) * m_tileSize / 2;
+    const QVector3D centerVector(centerDistance, 0, centerDistance);
+
     for (const auto &tile : qAsConst(tiles)) {
         int index = tile.matrixCoord.x() + (tile.matrixCoord.y() * m_tileCount);
         QQuick3DNode *node = m_delegateNodes[index];
-        node->setPosition(tile.position);
+        node->setPosition(tile.position - centerVector);
     }
 }
 
