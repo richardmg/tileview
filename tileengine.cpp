@@ -101,15 +101,16 @@ void TileView::resetAllTiles()
         return;
 
     if (m_tileCount % 2 != 0) {
-        qmlWarning(this) << "rowCount must be a multiple of 2";
+        qmlWarning(this) << "tileCount must be a multiple of 2";
         m_tileCount = m_tileCount + 1;
     }
 
-    // TODO: Take m_worldPos into account when calculating initial coordinates!
-
     m_tilesToUpdate.resize(m_tileCount);
     m_topRight.matrixCoord = QPoint(m_tileCount - 1, m_tileCount - 1);
-    m_topRight.tileCoord = QPoint((m_tileCount / 2) - 1, (m_tileCount / 2) - 1);
+    const QPoint startTile = mapPositionToTileCoordinate(m_centerPosition);
+    const QPoint centerOffset((m_tileCount / 2) - 1, (m_tileCount / 2) - 1);
+    m_topRight.tileCoord = startTile;// - centerOffset;
+    m_topRight.position = m_centerPosition;
 
     recreateDelegates();
 
