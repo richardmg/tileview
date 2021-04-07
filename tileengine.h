@@ -33,7 +33,7 @@ class TileEngine : public QObject, public QQmlParserStatus
     Q_PROPERTY(int rowCount READ rowCount WRITE setRowCount NOTIFY rowCountChanged)
     Q_PROPERTY(qreal tileSize READ tileSize WRITE setTileSize NOTIFY tileSizeChanged)
     Q_PROPERTY(QVector3D targetPosition READ targetPosition WRITE setTargetPosition NOTIFY targetPositionChanged)
-    Q_PROPERTY(QQuick3DNode *delegate READ delegate WRITE setDelegate NOTIFY delegateChanged FINAL)
+    Q_PROPERTY(QQmlComponent *delegate READ delegate WRITE setDelegate NOTIFY delegateChanged)
 
 public:
     explicit TileEngine(QObject *parent = nullptr);
@@ -49,10 +49,10 @@ public:
     void setTileSize(qreal tileSize);
 
     QVector3D targetPosition() const;
-    void setTargetPosition(QVector3D targetPosition);
+    void setTargetPosition(QVector3D position);
 
-    QQuick3DNode* delegate() const;
-    void setDelegate(QQuick3DNode *delegate);
+    QQmlComponent* delegate() const;
+    void setDelegate(QQmlComponent *delegate);
 
 signals:
     void rowCountChanged();
@@ -81,20 +81,18 @@ private:
 
 private:
     int m_rowCount = 0;
-    int m_rowCountHalf;
     qreal m_tileSize = 100;
-
-    QVector3D m_targetWorldPos;
+    QVector3D m_targetPosition;
 
     QPoint m_shiftedTileCoord;
     QPoint m_prevShiftedTileCoord;
     TileDescription m_topRight;
 
     QVector<TileDescription> m_tileMoveDesc;
-    QVector3D m_targetPosition;
+    QVector<QQuick3DNode *> m_delegateNodes;
 
     bool m_componentComplete = false;
-    QQuick3DNode * m_delegate;
+    QQmlComponent *m_delegate;
 };
 
 #endif // TILEENGINE_H

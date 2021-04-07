@@ -138,6 +138,18 @@ void TileEngine::updateTilesHelp(int shifted, int topRightX, int topRightY, bool
 void TileEngine::createDelegates()
 {
 
+    for (int matrixY = 0; matrixY < m_rowCount; ++matrixY) {
+        for (int matrixX = 0; matrixX < m_rowCount; ++matrixX) {
+            TileDescription &desc = m_tileMoveDesc[matrixX];
+
+            desc.matrixCoord = QPoint(matrixX, matrixY);
+            desc.tileCoord = tileCoordForMatrixCoord(desc.matrixCoord);
+            desc.worldPos = worldPosAtTileCoord(desc.tileCoord);
+            // TODO: ensure that we m_tileMoveDesc was updated!
+
+//            setNeighbours(m_tileMoveDesc[matrixX].matrixCoord, ref m_tileMoveDesc[matrixX].neighbours);
+        }
+    }
 }
 
 // *******************************************************************
@@ -177,12 +189,12 @@ void TileEngine::updateNeighbours(const QVector<TileNeighbours> &neighbours)
     qDebug() << __FUNCTION__;
 }
 
-QQuick3DNode *TileEngine::delegate() const
+QQmlComponent *TileEngine::delegate() const
 {
     return m_delegate;
 }
 
-void TileEngine::setDelegate(QQuick3DNode *delegate)
+void TileEngine::setDelegate(QQmlComponent *delegate)
 {
     if (m_delegate == delegate)
         return;
@@ -242,19 +254,19 @@ void TileEngine::setTileSize(qreal tileSize)
     emit tileSizeChanged();
 }
 
-void TileEngine::setTargetPosition(QVector3D worldPos)
+void TileEngine::setTargetPosition(QVector3D position)
 {
-    if (worldPos == m_targetWorldPos)
+    if (position == m_targetPosition)
         return;
 
-    const QVector3D prevWorldPos = m_targetWorldPos;
-    m_targetWorldPos = worldPos;
+    const QVector3D prevWorldPos = m_targetPosition;
+    m_targetPosition = position;
 
     if (!m_componentComplete)
         return;
 
     const QPoint prevShiftedTileCoord = tileCoordAtWorldPosShifted(prevWorldPos);
-    const QPoint shiftedTileCoord = tileCoordAtWorldPosShifted(worldPos);
+    const QPoint shiftedTileCoord = tileCoordAtWorldPosShifted(position);
 
     if (shiftedTileCoord == prevShiftedTileCoord)
         return;
@@ -267,7 +279,6 @@ void TileEngine::setTargetPosition(QVector3D worldPos)
     const int matrixTop = matrixPos(m_topRight.matrixCoord.y(), shiftedTiles.y());
     m_topRight.matrixCoord = QPoint(matrixRight, matrixTop);
 
-    // Inform listeners about the change
     if (shiftedTiles.x() != 0)
         updateTilesHelp(shiftedTiles.x(), m_topRight.matrixCoord.x(), m_topRight.matrixCoord.y(), false);
 
