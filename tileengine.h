@@ -16,10 +16,10 @@ struct TileNeighbours
     QPoint bottom = kNoNeighbour;
 };
 
-struct TileDescription
+struct Tile
 {
     QQuick3DNode *node;
-    QVector3D worldPos;
+    QVector3D position;
     QPoint tileCoord;
     QPoint matrixCoord;
     TileNeighbours neighbours;
@@ -40,9 +40,6 @@ public:
     explicit TileView(QQuick3DNode *parent = nullptr);
     ~TileView() override;
 
-    Q_INVOKABLE QVector3D worldPosAtTileCoord(QPoint tileCoord) const;
-    Q_INVOKABLE QPoint tileCoordAtWorldPos(QVector3D worldPos) const;
-
     int rowCount() const;
     void setRowCount(int rowCount);
 
@@ -62,20 +59,22 @@ signals:
     void delegateChanged();
 
 public:
-    virtual void updateDelegateNodes(const QVector<TileDescription> &tiles);
+    virtual void updateDelegateNodes(const QVector<Tile> &tiles);
     virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
 
 protected:
     void componentComplete() override;
 
 private:
+    QVector3D mapTileCoordToPosition(QPoint tileCoord) const;
+    QPoint mapPositionToTileCoordinate(QVector3D worldPos) const;
     int matrixPos(int startEdge, int edgeShifted) const;
-    QPoint matrixCoordForWorldPos(QVector3D worldPos) const;
-    QPoint tileCoordForMatrixCoord(QPoint matrixCoord) const;
+    QPoint mapPositionToMatrix(QVector3D worldPos) const;
+    QPoint mapMatrixCoordToTileCoord(QPoint matrixCoord) const;
 
 //    void setNeighbours(QPoint pos, TileNeighbours &result);
     void resetAllTiles();
-    QPoint tileCoordAtWorldPosShifted(QVector3D worldPos) const;
+    QPoint tileCoordinateShifted(QVector3D worldPos) const;
     void updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY);
 
 private:
@@ -85,9 +84,9 @@ private:
 
     QPoint m_shiftedTileCoord;
     QPoint m_prevShiftedTileCoord;
-    TileDescription m_topRight;
+    Tile m_topRight;
 
-    QVector<TileDescription> m_tileMoveDesc;
+    QVector<Tile> m_tilesToUpdate;
     QVector<QQuick3DNode *> m_delegateNodes;
 
     QQmlComponent *m_delegate;
