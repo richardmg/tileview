@@ -56,12 +56,13 @@ Window {
         }
 
         TileView {
-            center: Qt.vector3d(0, 0, 0) // personCamera.position // local or world
+            center: personCamera.position
             tileSize: 100
             tileCount: 4
+
             delegate: Model {
                 source: "#Cube"
-                eulerRotation: Qt.vector3d(-90, 0, 0)
+                scale: Qt.vector3d(0.5, 0.5, 0.5)
                 materials: [
                     DefaultMaterial {
                         diffuseColor: "yellow"
