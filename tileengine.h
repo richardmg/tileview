@@ -23,10 +23,11 @@ struct TileDescription
     TileNeighbours neighbours;
 };
 
-class TileEngine : public QObject
+class TileEngine : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
-    QML_ELEMENT;
+    QML_ELEMENT
+    Q_INTERFACES(QQmlParserStatus)
 
     Q_PROPERTY(int rowCount READ rowCount WRITE setRowCount NOTIFY rowCountChanged)
     Q_PROPERTY(qreal tileSize READ tileSize WRITE setTileSize NOTIFY tileSizeChanged)
@@ -56,6 +57,10 @@ signals:
     void tileSizeChanged();
     void targetPositionChanged();
 
+protected:
+    void classBegin() override {};
+    void componentComplete() override;
+
 private:
     int matrixPos(int startEdge, int edgeShifted) const;
     QPoint matrixCoordForWorldPos(QVector3D worldPos) const;
@@ -67,8 +72,8 @@ private:
     void updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY);
 
 private:
-    int m_tileCount = 4;
-    int m_tileCountHalf;
+    int m_rowCount = 0;
+    int m_rowCountHalf;
     qreal m_tileWorldSize = 100;
 
     QVector3D m_targetWorldPos;
@@ -78,9 +83,10 @@ private:
     TileDescription m_topRight;
 
     QVector<TileDescription> m_tileMoveDesc;
-    int m_rowCount;
     qreal m_tileSize;
     QVector3D m_targetPosition;
+
+    bool m_componentComplete = false;
 };
 
 #endif // TILEENGINE_H
