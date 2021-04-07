@@ -96,7 +96,7 @@ QPoint TileEngine::tileCoordAtWorldPosShifted(QVector3D worldPos) const
     // determine when to update the tile matrix. We use tileCoordAtWorldPosShifted to
     // shift the target position half a tile north-east to roll the matrix
     // when the user passes the center of a tile, rather than at the edge.
-    const qreal offset = qreal(m_tileWorldSize / 2.);
+    const qreal offset = qreal(m_tileSize / 2.);
     const QVector3D shifted(worldPos.x() + offset, worldPos.y() + offset, worldPos.z() + offset);
     return tileCoordAtWorldPos(shifted);
 }
@@ -140,17 +140,6 @@ void TileEngine::updateTilesHelp(int shifted, int topRightX, int topRightY, bool
 TileEngine::TileEngine(QObject *parent)
     : QObject(parent)
 {
-    m_rowCount = 4;
-    if (m_rowCount % 2 != 0) {
-        qmlWarning(this) << "rowCount must be a multiple of 2";
-        m_rowCount = m_rowCount + 1;
-    }
-
-    m_tileWorldSize = 100;
-    m_tileMoveDesc.resize(m_rowCount);
-
-    m_topRight.matrixCoord = QPoint(m_rowCount - 1, m_rowCount - 1);
-    m_topRight.tileCoord = QPoint((m_rowCount / 2) - 1, (m_rowCount / 2) - 1);
 }
 
 TileEngine::~TileEngine()
@@ -160,13 +149,13 @@ TileEngine::~TileEngine()
 QVector3D TileEngine::worldPosAtTileCoord(QPoint tileCoord) const
 {
     // NB: we here assume that the tile engine is aligned with x, z rather than x, y
-    return QVector3D(tileCoord.x() * m_tileWorldSize, 0, tileCoord.y() * m_tileWorldSize);
+    return QVector3D(tileCoord.x() * m_tileSize, 0, tileCoord.y() * m_tileSize);
 }
 
 QPoint TileEngine::tileCoordAtWorldPos(QVector3D worldPos) const
 {
-    const int tileX = int(qFloor(worldPos.x() / m_tileWorldSize));
-    const int tileY = int(qFloor(worldPos.z() / m_tileWorldSize));
+    const int tileX = int(qFloor(worldPos.x() / m_tileSize));
+    const int tileY = int(qFloor(worldPos.z() / m_tileSize));
     return QPoint(tileX, tileY);
 }
 
@@ -185,7 +174,19 @@ void TileEngine::updateNeighbours(const QVector<TileNeighbours> &neighbours)
 
 void TileEngine::componentComplete()
 {
+    if (m_rowCount % 2 != 0) {
+        qmlWarning(this) << "rowCount must be a multiple of 2";
+        m_rowCount = m_rowCount + 1;
+    }
+
+    // TODO: Take m_worldPos into account when calculating initial coordinates!
+
+    m_tileMoveDesc.resize(m_rowCount);
+    m_topRight.matrixCoord = QPoint(m_rowCount - 1, m_rowCount - 1);
+    m_topRight.tileCoord = QPoint((m_rowCount / 2) - 1, (m_rowCount / 2) - 1);
+
     updateAllTiles();
+
     m_componentComplete = true;
 }
 
@@ -206,7 +207,6 @@ qreal TileEngine::tileSize() const
 
 void TileEngine::setRowCount(int rowCount)
 {
-    qmlWarning(this) << "NOT USED!";
     if (m_rowCount == rowCount)
         return;
 
@@ -216,7 +216,6 @@ void TileEngine::setRowCount(int rowCount)
 
 void TileEngine::setTileSize(qreal tileSize)
 {
-    qmlWarning(this) << "NOT USED!";
     if (qFuzzyCompare(m_tileSize, tileSize))
         return;
 

@@ -74,7 +74,7 @@ private:
 private:
     int m_rowCount = 0;
     int m_rowCountHalf;
-    qreal m_tileWorldSize = 100;
+    qreal m_tileSize = 100;
 
     QVector3D m_targetWorldPos;
 
@@ -83,7 +83,6 @@ private:
     TileDescription m_topRight;
 
     QVector<TileDescription> m_tileMoveDesc;
-    qreal m_tileSize;
     QVector3D m_targetPosition;
 
     bool m_componentComplete = false;
