@@ -75,7 +75,7 @@ private:
 //    void setNeighbours(QPoint pos, TileNeighbours &result);
     void resetAllTiles();
     QPoint mapPositionToTileCoordShifted(QVector3D position) const;
-    void updateTiles(int shifted, int cornerX, int cornerY, bool updateAxisY);
+    void shiftMatrix(int shiftCount, bool alongYAxis);
 
 private:
     int m_tileCount = 0;

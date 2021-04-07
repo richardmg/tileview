@@ -129,10 +129,13 @@ void TileView::resetAllTiles()
     }
 }
 
-void TileView::updateTiles(int shifted, int cornerX, int cornerY, bool updateAxisY)
+void TileView::shiftMatrix(int shiftCount, bool alongYAxis)
 {
-    int moveDirection = shifted > 0 ? 1 : -1;
-    int shiftCount = qMin(qAbs(shifted), m_tileCount);
+    const int cornerX = alongYAxis ? m_cornerTile.matrixCoord.y() : m_cornerTile.matrixCoord.x();
+    const int cornerY = alongYAxis ? m_cornerTile.matrixCoord.x() : m_cornerTile.matrixCoord.y();
+
+    int moveDirection = shiftCount > 0 ? 1 : -1;
+    shiftCount = qMin(qAbs(shiftCount), m_tileCount);
     int shiftCountIncludingNeighbours = shiftCount;// + (neighbourCallback != null ? 1 : 0);
 
     for (int i = 0; i < shiftCountIncludingNeighbours; ++i) {
@@ -144,7 +147,7 @@ void TileView::updateTiles(int shifted, int cornerX, int cornerY, bool updateAxi
             Tile &tile = m_tilesToUpdate[j];
 
             QPoint matrixCoord(matrixFrontX, matrixCoordShifted(cornerY, -j));
-            if (updateAxisY) {
+            if (alongYAxis) {
                 const int tmp = matrixCoord.x();
                 matrixCoord.setX(matrixCoord.y());
                 matrixCoord.setY(tmp);
@@ -300,10 +303,10 @@ void TileView::setCenter(QVector3D center)
     m_cornerTile.matrixCoord = QPoint(matrixCoordX, matrixCoordY);
 
     if (shiftedTiles.x() != 0)
-        updateTiles(shiftedTiles.x(), m_cornerTile.matrixCoord.x(), m_cornerTile.matrixCoord.y(), false);
+        shiftMatrix(shiftedTiles.x(), false);
 
     if (shiftedTiles.y() != 0)
-        updateTiles(shiftedTiles.y(), m_cornerTile.matrixCoord.y(), m_cornerTile.matrixCoord.x(), true);
+        shiftMatrix(shiftedTiles.y(), true);
 
     emit centerChanged();
 }
