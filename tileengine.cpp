@@ -207,10 +207,10 @@ void TileView::updateDelegates(const QVector<Tile> &tiles)
     }
 }
 
-void TileView::updateNeighbours(const QVector<TileNeighbours> &neighbours)
-{
-    qDebug() << __FUNCTION__;
-}
+//void TileView::updateNeighbours(const QVector<TileNeighbours> &neighbours)
+//{
+//    qDebug() << __FUNCTION__;
+//}
 
 void TileView::componentComplete()
 {

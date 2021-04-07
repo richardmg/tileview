@@ -65,7 +65,7 @@ signals:
 public:
     virtual void recreateDelegates();
     virtual void updateDelegates(const QVector<Tile> &tiles);
-    virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
+//    virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
 
 protected:
     void componentComplete() override;
