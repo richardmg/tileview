@@ -39,13 +39,36 @@ Window {
         camera: droneCamera
         importScene: scene
         environment: SceneEnvironment {
-            clearColor: Qt.rgba(0.3, 0.3, 0.3, 1.0)
+            clearColor: Qt.rgba(0.8, 0.8, 0.8, 1.0)
             backgroundMode: SceneEnvironment.Color
         }
     }
 
     Node {
         id: scene
+
+        TileView {
+            center: personCamera.position
+            tileSize: Qt.vector3d(500, 500, 500)
+            tileCount: Qt.vector3d(3, 3, 3)
+
+            delegate: Node {
+                Star {
+                    scale: Qt.vector3d(0.03, 0.03, 0.03)
+                    instancing: randomInstancing
+                }
+                RandomInstancing {
+                    id: randomInstancing
+                    instanceCount: 500
+                    randomSeed: 2021
+
+                    position: InstanceRange {
+                        from: Qt.vector3d(-200, -200, -200)
+                        to: Qt.vector3d(200, 200, 200)
+                    }
+                }
+            }
+        }
 
         PerspectiveCamera {
             id: personCamera
@@ -59,11 +82,6 @@ Window {
                         diffuseColor: "red"
                     }
                 ]
-
-                PointLight {
-                    color: Qt.rgba(1.0, 1.0, 1.0, 1.0)
-//                    ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
-                }
             }
         }
 
@@ -71,19 +89,8 @@ Window {
             id: droneCamera
             position: Qt.vector3d(personCamera.x, personCamera.y + 1000, personCamera.z)
             eulerRotation: Qt.vector3d(-90, 0, 0)
-            horizontalMagnification: 0.2
-            verticalMagnification: 0.2
-        }
-
-        TileView {
-            center: personCamera.position
-            tileSize: Qt.vector3d(80, 80, 80)
-            tileCount: Qt.vector3d(8, 8, 8)
-
-            delegate: Star {
-                scale: Qt.vector3d(0.2, 0.2, 0.2)
-     //      someProp: TileView.onTileChanged: print("new tile pos:", TileView.tile)
-            }
+            horizontalMagnification: 0.1
+            verticalMagnification: 0.1
         }
 
         DirectionalLight {
@@ -96,6 +103,7 @@ Window {
         Model {
             scale: Qt.vector3d(0.1, 0.1, 0.1)
             source: "#Cube"
+//            instancing: randomInstancing
 //            geometry: ExampleTriangleGeometry { uv: true }
             materials: [
                 DefaultMaterial {
@@ -110,6 +118,7 @@ Window {
                 }
             ]
         }
+
     }
 
     WasdController {
