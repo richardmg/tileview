@@ -24,10 +24,13 @@ struct Tile
     TileNeighbours neighbours;
 };
 
+class TileViewAttached;
+
 class TileView : public QQuick3DNode
 {
     Q_OBJECT
     QML_ELEMENT
+    QML_ATTACHED(TileViewAttached)
     Q_INTERFACES(QQmlParserStatus)
 
     Q_PROPERTY(int tileCount READ tileCount WRITE setTileCount NOTIFY tileCountChanged)
@@ -51,6 +54,8 @@ public:
     QQmlComponent* delegate() const;
     void setDelegate(QQmlComponent *delegate);
 
+    static TileViewAttached *qmlAttachedProperties(QObject *obj);
+
 signals:
     void tileCountChanged();
     void tileSizeChanged();
@@ -68,14 +73,18 @@ protected:
 private:
     QVector3D mapTileCoordToPosition(QPoint tileCoord) const;
     QPoint mapPositionToTileCoord(QVector3D position) const;
-    int matrixCoordShifted(int startCoord, int shiftCount) const;
     QPoint mapPositionToMatrixCoord(QVector3D position) const;
     QPoint mapMatrixCoordToTileCoord(QPoint matrixCoord) const;
+    QPoint mapPositionToTileCoordShifted(QVector3D position) const;
+
+    void resetAllTiles();
+
+    void shiftMatrix(int shiftCount, bool alongYAxis);
+    int matrixCoordShifted(int startCoord, int shiftCount) const;
 
 //    void setNeighbours(QPoint pos, TileNeighbours &result);
-    void resetAllTiles();
-    QPoint mapPositionToTileCoordShifted(QVector3D position) const;
-    void shiftMatrix(int shiftCount, bool alongYAxis);
+
+    TileViewAttached *getAttachedObject(const QObject *obj) const;
 
 private:
     int m_tileCount = 0;
@@ -89,7 +98,31 @@ private:
     QVector<Tile> m_tilesToUpdate;
     QVector<QQuick3DNode *> m_delegateNodes;
 
-    QQmlComponent *m_delegate;
+    QQmlComponent *m_delegate = nullptr;
+};
+
+class TileViewAttached : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(TileView *view READ view NOTIFY viewChanged)
+    Q_PROPERTY(QVector3D tile READ tile NOTIFY tileChanged)
+
+public:
+    TileViewAttached(QObject *parent);
+
+    TileView *view() const;
+    void setView(TileView *tileView);
+
+    QVector3D tile() const;
+    void setTile(const QVector3D &tile);
+
+signals:
+    void viewChanged();
+    void tileChanged();
+
+private:
+    QPointer<TileView> m_view;
+    QVector3D m_tile;
 };
 
 #endif // TILEENGINE_H

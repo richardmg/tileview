@@ -203,6 +203,7 @@ void TileView::updateDelegates(const QVector<Tile> &tiles)
         int index = tile.matrixCoord.x() + (tile.matrixCoord.y() * m_tileCount);
         QQuick3DNode *node = m_delegateNodes[index];
         node->setPosition(tile.position - centerVector);
+        getAttachedObject(node)->setTile(QVector3D(tile.tileCoord.x(), 0, tile.tileCoord.y()));
     }
 }
 
@@ -215,6 +216,17 @@ void TileView::componentComplete()
 {
     QQuick3DNode::componentComplete();
     resetAllTiles();
+}
+
+TileViewAttached *TileView::getAttachedObject(const QObject *obj) const
+{
+    QObject *attachedObject = qmlAttachedPropertiesObject<TileView>(obj);
+    return static_cast<TileViewAttached *>(attachedObject);
+}
+
+TileViewAttached *TileView::qmlAttachedProperties(QObject *obj)
+{
+    return new TileViewAttached(obj);
 }
 
 // *******************************************************************
@@ -312,4 +324,44 @@ void TileView::setCenter(QVector3D center)
         shiftMatrix(shiftedTiles.y(), true);
 
     emit centerChanged();
+}
+
+TileViewAttached::TileViewAttached(QObject *parent)
+    : QObject(parent)
+{
+}
+
+TileView *TileViewAttached::view() const
+{
+    return m_view;
+}
+
+void TileViewAttached::setView(TileView *tileView)
+{
+    if (tileView == m_view)
+        return;
+
+    m_view = tileView;
+
+    emit viewChanged();
+}
+
+QVector3D TileViewAttached::tile() const
+{
+    return m_tile;
+}
+
+void TileViewAttached::setTile(const QVector3D &tile)
+{
+    // Even if m_tile doesn't change for the one tile at start up
+    // that happens to be on 0,0,0, we emit it as changed anyway.
+    // That way the delegate can know in a uniform way, when it's
+    // time to update it's contents.
+    if (m_tile == tile && !m_tile.isNull())
+        return;
+
+    m_tile = tile;
+
+    emit tileChanged();
+
 }

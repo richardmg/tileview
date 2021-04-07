@@ -69,6 +69,7 @@ Window {
                         diffuseColor: "yellow"
                     }
                 ]
+                TileView.onTileChanged: print("new tile pos:", TileView.tile)
             }
         }
 
