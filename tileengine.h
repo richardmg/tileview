@@ -6,22 +6,11 @@
 #include <QtQuick3D/QtQuick3D>
 #include <QtQuick3D/private/qquick3dnode_p.h>
 
-const QPoint kNoNeighbour(-1, -1);
-
-struct TileNeighbours
-{
-    QPoint left = kNoNeighbour;
-    QPoint right = kNoNeighbour;
-    QPoint top = kNoNeighbour;
-    QPoint bottom = kNoNeighbour;
-};
-
 struct Tile
 {
     QVector3D position;
     QVector3D tileCoord;
     QVector3D matrixCoord;
-    TileNeighbours neighbours;
 };
 
 class TileViewAttached;
@@ -65,7 +54,6 @@ signals:
 public:
     virtual void recreateDelegates();
     virtual void updateDelegate(const Tile &tile);
-//    virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
 
 protected:
     void componentComplete() override;
@@ -79,10 +67,10 @@ private:
 
     void resetAllTiles();
 
-    void shiftMatrix(int shiftCount, Qt::Axis axis);
+    void shiftMatrixAlongX(int shiftCount);
+    void shiftMatrixAlongY(int shiftCount);
+    void shiftMatrixAlongZ(int shiftCount);
     int matrixCoordShifted(int startCoord, int shiftCount) const;
-
-//    void setNeighbours(QPoint pos, TileNeighbours &result);
 
     TileViewAttached *getAttachedObject(const QObject *obj) const;
 

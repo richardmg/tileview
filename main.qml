@@ -8,8 +8,8 @@ import TileEngine
 
 Window {
     id: window
-    width: 1280
-    height: 720
+    width: 1024
+    height: 640
     visible: true
     color: "#848895"
 
@@ -52,18 +52,18 @@ Window {
 
         PerspectiveCamera {
             id: droneCamera
-            position: Qt.vector3d(personCamera.x, 1000, personCamera.z)
+            position: Qt.vector3d(personCamera.x, personCamera.y + 1000, personCamera.z)
             eulerRotation: Qt.vector3d(-90, 0, 0)
         }
 
         TileView {
             center: personCamera.position
-            tileSize: 100
-            tileCount: 4
+            tileSize: 50
+            tileCount: 8
 
             delegate: Model {
                 source: "#Cube"
-                scale: Qt.vector3d(0.5, 0.1, 0.5)
+                scale: Qt.vector3d(0.2, 0.2, 0.2)
                 materials: [
                     DefaultMaterial {
                         diffuseColor: "yellow"
