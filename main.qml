@@ -13,22 +13,29 @@ Window {
     visible: true
     color: "#848895"
 
-    Row {
+    View3D {
+        id: mainView
         anchors.fill: parent
-        spacing: 10
-
-        View3D {
-            height: parent.height
-            width: parent.width / 2
-            camera: personCamera
-            importScene: scene
+        camera: personCamera
+        importScene: scene
+        environment: SceneEnvironment {
+            clearColor: Qt.rgba(0.1, 0.1, 0.1, 1.0)
+            backgroundMode: SceneEnvironment.Color
         }
+    }
 
-        View3D {
-            height: parent.height
-            width: parent.width / 2
-            camera: droneCamera
-            importScene: scene
+    View3D {
+        id: droneView
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 10
+        height: 150
+        width: 250
+        camera: droneCamera
+        importScene: scene
+        environment: SceneEnvironment {
+            clearColor: Qt.rgba(0.3, 0.3, 0.3, 1.0)
+            backgroundMode: SceneEnvironment.Color
         }
     }
 
@@ -40,30 +47,37 @@ Window {
             position: Qt.vector3d(0, 0, 0)
             Model {
                 source: "#Cone"
-                scale: Qt.vector3d(0.1, 0.1, 0.1)
-//                eulerRotation: Qt.vector3d(-90, 0, 0)
+                scale: Qt.vector3d(0.5, 0.5, 0.5)
+                eulerRotation: Qt.vector3d(-90, 0, 0)
                 materials: [
                     DefaultMaterial {
                         diffuseColor: "red"
                     }
                 ]
+
+//                PointLight {
+//                    color: Qt.rgba(1.0, 0.0, 0.0, 1.0)
+////                    ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
+//                }
             }
         }
 
-        PerspectiveCamera {
+        OrthographicCamera {
             id: droneCamera
             position: Qt.vector3d(personCamera.x, personCamera.y + 1000, personCamera.z)
             eulerRotation: Qt.vector3d(-90, 0, 0)
+            horizontalMagnification: 0.2
+            verticalMagnification: 0.2
         }
 
         TileView {
             center: personCamera.position
-            tileSize: Qt.vector3d(50, 50, 50)
-            tileCount: Qt.vector3d(4, 4, 4)
+            tileSize: Qt.vector3d(80, 80, 80)
+            tileCount: Qt.vector3d(8, 8, 8)
 
             delegate: Model {
                 source: "#Cube"
-                scale: Qt.vector3d(0.2, 0.2, 0.2)
+                scale: Qt.vector3d(0.05, 0.05, 0.05)
                 materials: [
                     DefaultMaterial {
                         diffuseColor: "yellow"
@@ -74,14 +88,9 @@ Window {
         }
 
         DirectionalLight {
-            position: Qt.vector3d(-500, 500, -100)
-            color: Qt.rgba(0.4, 0.2, 0.6, 1.0)
-            ambientColor: Qt.rgba(0.1, 0.1, 0.1, 1.0)
-        }
-
-        PointLight {
-            position: Qt.vector3d(0, 0, 100)
-            color: Qt.rgba(0.1, 1.0, 0.1, 1.0)
+            position: Qt.vector3d(500, 500, 500)
+            eulerRotation: Qt.vector3d(-70, 45, 0)
+            color: Qt.rgba(1.0, 1.0, 1.0, 1.0)
             ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
         }
 
