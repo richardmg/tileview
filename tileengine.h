@@ -4,6 +4,7 @@
 #include <QtCore/QtCore>
 #include <QtQml/QtQml>
 #include <QtQuick3D/QtQuick3D>
+#include <QtQuick3D/private/qquick3dnode_p.h>
 
 const QPoint kNoNeighbour(-1, -1);
 
@@ -32,6 +33,7 @@ class TileEngine : public QObject, public QQmlParserStatus
     Q_PROPERTY(int rowCount READ rowCount WRITE setRowCount NOTIFY rowCountChanged)
     Q_PROPERTY(qreal tileSize READ tileSize WRITE setTileSize NOTIFY tileSizeChanged)
     Q_PROPERTY(QVector3D targetPosition READ targetPosition WRITE setTargetPosition NOTIFY targetPositionChanged)
+    Q_PROPERTY(QQuick3DNode *delegate READ delegate WRITE setDelegate NOTIFY delegateChanged FINAL)
 
 public:
     explicit TileEngine(QObject *parent = nullptr);
@@ -49,13 +51,18 @@ public:
     QVector3D targetPosition() const;
     void setTargetPosition(QVector3D targetPosition);
 
-    virtual void updateTiles(const QVector<TileDescription> &tiles);
-    virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
+    QQuick3DNode* delegate() const;
+    void setDelegate(QQuick3DNode *delegate);
 
 signals:
     void rowCountChanged();
     void tileSizeChanged();
     void targetPositionChanged();
+    void delegateChanged();
+
+public:
+    virtual void updateTiles(const QVector<TileDescription> &tiles);
+    virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
 
 protected:
     void classBegin() override {};
@@ -70,6 +77,7 @@ private:
     void updateAllTiles();
     QPoint tileCoordAtWorldPosShifted(QVector3D worldPos) const;
     void updateTilesHelp(int shifted, int topRightX, int topRightY, bool updateAxisY);
+    void createDelegates();
 
 private:
     int m_rowCount = 0;
@@ -86,6 +94,7 @@ private:
     QVector3D m_targetPosition;
 
     bool m_componentComplete = false;
+    QQuick3DNode * m_delegate;
 };
 
 #endif // TILEENGINE_H

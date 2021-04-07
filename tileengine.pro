@@ -1,4 +1,5 @@
 QT += quick quick3d
+QT += quick3d-private
 
 CONFIG += qmltypes
 QML_IMPORT_NAME = TileEngine

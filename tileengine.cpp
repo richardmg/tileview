@@ -135,6 +135,11 @@ void TileEngine::updateTilesHelp(int shifted, int topRightX, int topRightY, bool
     }
 }
 
+void TileEngine::createDelegates()
+{
+
+}
+
 // *******************************************************************
 
 TileEngine::TileEngine(QObject *parent)
@@ -170,6 +175,20 @@ void TileEngine::updateTiles(const QVector<TileDescription> &tiles)
 void TileEngine::updateNeighbours(const QVector<TileNeighbours> &neighbours)
 {
     qDebug() << __FUNCTION__;
+}
+
+QQuick3DNode *TileEngine::delegate() const
+{
+    return m_delegate;
+}
+
+void TileEngine::setDelegate(QQuick3DNode *delegate)
+{
+    if (m_delegate == delegate)
+        return;
+
+    m_delegate = delegate;
+    emit delegateChanged();
 }
 
 void TileEngine::componentComplete()
