@@ -59,7 +59,7 @@ Window {
         TileView {
             center: personCamera.position
             tileSize: 50
-            tileCount: 8
+            tileCount: Qt.vector3d(4, 1, 4)
 
             delegate: Model {
                 source: "#Cube"

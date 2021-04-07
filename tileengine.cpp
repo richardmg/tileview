@@ -19,9 +19,9 @@ QVector3D TileView::mapPositionToMatrixCoord(QVector3D position) const
 {
     const QVector3D tileCoord = mapPositionToTileCoord(position);
     const QVector3D tileOffset = m_cornerTile.tileCoord - tileCoord;
-    const int matrixX = matrixCoordShifted(m_cornerTile.matrixCoord.x(), -tileOffset.x());
-    const int matrixY = matrixCoordShifted(m_cornerTile.matrixCoord.y(), -tileOffset.y());
-    const int matrixZ = matrixCoordShifted(m_cornerTile.matrixCoord.z(), -tileOffset.z());
+    const int matrixX = matrixCoordShiftedX(m_cornerTile.matrixCoord.x(), -tileOffset.x());
+    const int matrixY = matrixCoordShiftedY(m_cornerTile.matrixCoord.y(), -tileOffset.y());
+    const int matrixZ = matrixCoordShiftedZ(m_cornerTile.matrixCoord.z(), -tileOffset.z());
     return QVector3D(matrixX, matrixY, matrixZ);
 }
 
@@ -32,12 +32,12 @@ QVector3D TileView::mapMatrixCoordToTileCoord(QVector3D matrixCoord) const
     // the offset between the matrix coordinate of the corner and the given argument.
     // This is most easily done by normalizing the corner tile so that we don't need to
     // take wrapping into account.
-    const int coordXNorm = matrixCoordShifted(matrixCoord.x(), -m_cornerTile.matrixCoord.x() + (m_tileCount - 1));
-    const int coordYNorm = matrixCoordShifted(matrixCoord.y(), -m_cornerTile.matrixCoord.y() + (m_tileCount - 1));
-    const int coordZNorm = matrixCoordShifted(matrixCoord.z(), -m_cornerTile.matrixCoord.z() + (m_tileCount - 1));
-    const int offsetX = coordXNorm - m_tileCount + 1;
-    const int offsetY = coordYNorm - m_tileCount + 1;
-    const int offsetZ = coordZNorm - m_tileCount + 1;
+    const int coordXNorm = matrixCoordShiftedX(matrixCoord.x(), -m_cornerTile.matrixCoord.x() + (int(m_tileCount.x()) - 1));
+    const int coordYNorm = matrixCoordShiftedY(matrixCoord.y(), -m_cornerTile.matrixCoord.y() + (int(m_tileCount.y()) - 1));
+    const int coordZNorm = matrixCoordShiftedZ(matrixCoord.z(), -m_cornerTile.matrixCoord.z() + (int(m_tileCount.z()) - 1));
+    const int offsetX = coordXNorm - int(m_tileCount.x()) + 1;
+    const int offsetY = coordYNorm - int(m_tileCount.y()) + 1;
+    const int offsetZ = coordZNorm - int(m_tileCount.z()) + 1;
     const int tileX = m_cornerTile.tileCoord.x() + offsetX;
     const int tileY = m_cornerTile.tileCoord.y() + offsetY;
     const int tileZ = m_cornerTile.tileCoord.z() + offsetZ;
@@ -56,7 +56,7 @@ QVector3D TileView::mapPositionToTileCoordShifted(QVector3D position) const
 }
 
 /**
- * The user of TileEngine is supposed to have a matrix of m_tileCount * m_tileCount size.
+ * The user of TileEngine is supposed to have a matrix of tileCountX() * tileCountX() size.
  * Whenever our target position moves, new rows and columns with tiles will move into the
  * current "window" of tiles that the engine at any given time covers. Since we don't want
  * to move all the tiles in the matrix, e.g one row up or down when a new row appears, to make
@@ -71,9 +71,22 @@ QVector3D TileView::mapPositionToTileCoordShifted(QVector3D position) const
  * position the matrix if you shift it shiftCount in one direction. This might mean that
  * it wraps around on the other side of the matrix.
  */
-int TileView::matrixCoordShifted(int startCoord, int shiftCount) const
+int TileView::matrixCoordShiftedX(int startCoord, int shiftCount) const
 {
-    return (m_tileCount + startCoord + (shiftCount % m_tileCount)) % m_tileCount;
+    const int count = int(m_tileCount.x());
+    return (count + startCoord + (shiftCount % count)) % count;
+}
+
+int TileView::matrixCoordShiftedY(int startCoord, int shiftCount) const
+{
+    const int count = int(m_tileCount.y());
+    return (count + startCoord + (shiftCount % count)) % count;
+}
+
+int TileView::matrixCoordShiftedZ(int startCoord, int shiftCount) const
+{
+    const int count = int(m_tileCount.z());
+    return (count + startCoord + (shiftCount % count)) % count;
 }
 
 void TileView::resetAllTiles()
@@ -81,21 +94,16 @@ void TileView::resetAllTiles()
     if (!isComponentComplete())
         return;
 
-    if (m_tileCount % 2 != 0) {
-        qmlWarning(this) << "tileCount must be a multiple of 2";
-        m_tileCount = m_tileCount + 1;
-    }
-
-    m_cornerTile.matrixCoord = QVector3D(m_tileCount - 1, m_tileCount - 1, m_tileCount - 1);
+    m_cornerTile.matrixCoord = QVector3D(int(m_tileCount.x()) - 1, int(m_tileCount.y()) - 1, int(m_tileCount.z()) - 1);
     m_cornerTile.tileCoord = m_cornerTile.matrixCoord;
     m_cornerTile.position = mapTileCoordToPosition(m_cornerTile.tileCoord);
 
     recreateDelegates();
 
     Tile tile;
-    for (int matrixZ = 0; matrixZ < m_tileCount; ++matrixZ) {
-        for (int matrixY = 0; matrixY < m_tileCount; ++matrixY) {
-            for (int matrixX = 0; matrixX < m_tileCount; ++matrixX) {
+    for (int matrixZ = 0; matrixZ < int(m_tileCount.z()); ++matrixZ) {
+        for (int matrixY = 0; matrixY < int(m_tileCount.y()); ++matrixY) {
+            for (int matrixX = 0; matrixX < int(m_tileCount.x()); ++matrixX) {
                 tile.matrixCoord = QVector3D(matrixX, matrixY, matrixZ);
                 tile.tileCoord = tile.matrixCoord;
                 tile.position = mapTileCoordToPosition(tile.tileCoord);
@@ -110,26 +118,26 @@ void TileView::shiftMatrixAlongX(int shiftCount)
     // Update corner tile
     m_cornerTile.tileCoord += QVector3D(shiftCount, 0, 0);
     const int cornerX = int(m_cornerTile.matrixCoord.x());
-    const int newCornerX = matrixCoordShifted(cornerX, shiftCount);
+    const int newCornerX = matrixCoordShiftedX(cornerX, shiftCount);
     m_cornerTile.matrixCoord.setX(newCornerX);
 
     const int direction = shiftCount > 0 ? 1 : -1;
-    shiftCount = qMin(qAbs(shiftCount), m_tileCount);
+    shiftCount = qMin(qAbs(shiftCount), int(m_tileCount.x()));
     Tile tile;
 
     // Shift delegate items according to the new corner tile
     for (int x = 0; x < shiftCount; ++x) {
-        int xPlaneToMove = matrixCoordShifted(cornerX, x * -direction);
+        int xPlaneToMove = matrixCoordShiftedX(cornerX, x * -direction);
         if (direction > 0) {
             // When we go up the positive axis, we don't want to update the
             // plane at the corner (which is the one visually in front).
             // Instead we want to update the plane at the opposite end, and
             // place it in front. We can get that side by simply shifting the
             // position by 1, since that will wrap it over to the other side.
-            xPlaneToMove = matrixCoordShifted(xPlaneToMove, 1);
+            xPlaneToMove = matrixCoordShiftedX(xPlaneToMove, 1);
         }
-        for (int z = 0; z < m_tileCount; ++z) {
-            for (int y = 0; y < m_tileCount; ++y) {
+        for (int z = 0; z < int(m_tileCount.z()); ++z) {
+            for (int y = 0; y < int(m_tileCount.y()); ++y) {
                 tile.matrixCoord = QVector3D(xPlaneToMove, y, z);
                 tile.tileCoord = mapMatrixCoordToTileCoord(tile.matrixCoord);
                 tile.position = mapTileCoordToPosition(tile.tileCoord);
@@ -144,26 +152,26 @@ void TileView::shiftMatrixAlongY(int shiftCount)
     // Update corner tile
     m_cornerTile.tileCoord += QVector3D(0, shiftCount, 0);
     const int cornerY = int(m_cornerTile.matrixCoord.y());
-    const int newCornerY = matrixCoordShifted(cornerY, shiftCount);
+    const int newCornerY = matrixCoordShiftedY(cornerY, shiftCount);
     m_cornerTile.matrixCoord.setY(newCornerY);
 
     const int direction = shiftCount > 0 ? 1 : -1;
-    shiftCount = qMin(qAbs(shiftCount), m_tileCount);
+    shiftCount = qMin(qAbs(shiftCount), int(m_tileCount.y()));
     Tile tile;
 
     // Shift delegate items according to the new corner tile
     for (int y = 0; y < shiftCount; ++y) {
-        int yPlaneToMove = matrixCoordShifted(cornerY, y * -direction);
+        int yPlaneToMove = matrixCoordShiftedY(cornerY, y * -direction);
         if (direction > 0) {
             // When we go up the positive axis, we don't want to update the
             // plane at the corner (which is the one visually in front).
             // Instead we want to update the plane at the opposite end, and
             // place it in front. We can get that side by simply shifting the
             // position by 1, since that will wrap it over to the other side.
-            yPlaneToMove = matrixCoordShifted(yPlaneToMove, 1);
+            yPlaneToMove = matrixCoordShiftedY(yPlaneToMove, 1);
         }
-        for (int z = 0; z < m_tileCount; ++z) {
-            for (int x = 0; x < m_tileCount; ++x) {
+        for (int z = 0; z < int(m_tileCount.z()); ++z) {
+            for (int x = 0; x < int(m_tileCount.x()); ++x) {
                 tile.matrixCoord = QVector3D(x, yPlaneToMove, z);
                 tile.tileCoord = mapMatrixCoordToTileCoord(tile.matrixCoord);
                 tile.position = mapTileCoordToPosition(tile.tileCoord);
@@ -178,26 +186,26 @@ void TileView::shiftMatrixAlongZ(int shiftCount)
     // Update corner tile
     m_cornerTile.tileCoord += QVector3D(0, 0, shiftCount);
     const int cornerZ = int(m_cornerTile.matrixCoord.z());
-    const int newCornerZ = matrixCoordShifted(cornerZ, shiftCount);
+    const int newCornerZ = matrixCoordShiftedZ(cornerZ, shiftCount);
     m_cornerTile.matrixCoord.setZ(newCornerZ);
 
     const int direction = shiftCount > 0 ? 1 : -1;
-    shiftCount = qMin(qAbs(shiftCount), m_tileCount);
+    shiftCount = qMin(qAbs(shiftCount), int(m_tileCount.z()));
     Tile tile;
 
     // Shift delegate items according to the new corner tile
     for (int z = 0; z < shiftCount; ++z) {
-        int zPlaneToMove = matrixCoordShifted(cornerZ, z * -direction);
+        int zPlaneToMove = matrixCoordShiftedZ(cornerZ, z * -direction);
         if (direction > 0) {
             // When we go up the positive axis, we don't want to update the
             // plane at the corner (which is the one visually in front).
             // Instead we want to update the plane at the opposite end, and
             // place it in front. We can get that side by simply shifting the
             // position by 1, since that will wrap it over to the other side.
-            zPlaneToMove = matrixCoordShifted(zPlaneToMove, 1);
+            zPlaneToMove = matrixCoordShiftedZ(zPlaneToMove, 1);
         }
-        for (int x = 0; x < m_tileCount; ++x) {
-            for (int y = 0; y < m_tileCount; ++y) {
+        for (int x = 0; x < int(m_tileCount.x()); ++x) {
+            for (int y = 0; y < int(m_tileCount.y()); ++y) {
                 tile.matrixCoord = QVector3D(x, y, zPlaneToMove);
                 tile.tileCoord = mapMatrixCoordToTileCoord(tile.matrixCoord);
                 tile.position = mapTileCoordToPosition(tile.tileCoord);
@@ -212,7 +220,7 @@ void TileView::recreateDelegates()
     qDeleteAll(m_delegateNodes);
     m_delegateNodes.clear();
 
-    const int delegateCount = m_tileCount * m_tileCount * m_tileCount;
+    const int delegateCount = int(m_tileCount.x()) * int(m_tileCount.y()) * int(m_tileCount.z());
     m_delegateNodes.reserve(delegateCount);
 
     // Create all delegate items
@@ -236,12 +244,13 @@ void TileView::updateDelegate(const Tile &tile)
     // NOTE: Should I take scale into account?
 
     int index = tile.matrixCoord.x()
-            + (tile.matrixCoord.y() * m_tileCount)
-            + (tile.matrixCoord.z() * m_tileCount * m_tileCount);
+            + (tile.matrixCoord.y() * int(m_tileCount.x()))
+            + (tile.matrixCoord.z() * int(m_tileCount.x()) * int(m_tileCount.y()));
     QQuick3DNode *node = m_delegateNodes[index];
 
-    const qreal centerDistance = (m_tileCount - 1) * m_tileSize / 2;
-    const QVector3D centerVector(centerDistance, centerDistance, centerDistance);
+    const QVector3D centerVector((int(m_tileCount.x()) - 1) * m_tileSize / 2,
+                                 (int(m_tileCount.y()) - 1) * m_tileSize / 2,
+                                 (int(m_tileCount.z()) - 1) * m_tileSize / 2);
     node->setPosition(tile.position - centerVector);
     getAttachedObject(node)->setTile(tile.tileCoord);
 }
@@ -296,15 +305,28 @@ QVector3D TileView::center() const
     return m_centerPosition;
 }
 
-int TileView::tileCount() const
+QVector3D TileView::tileCount() const
 {
     return m_tileCount;
 }
 
-void TileView::setTileCount(int tileCount)
+void TileView::setTileCount(const QVector3D &tileCount)
 {
     if (m_tileCount == tileCount)
         return;
+
+    if (int(m_tileCount.x()) % 2 != 0) {
+        qmlWarning(this) << "tileCount.x must be a multiple of 2";
+        return;
+    }
+    if (int(m_tileCount.y()) % 2 != 0) {
+        qmlWarning(this) << "tileCount.y must be a multiple of 2";
+        return;
+    }
+    if (int(m_tileCount.z()) % 2 != 0) {
+        qmlWarning(this) << "tileCount.z must be a multiple of 2";
+        return;
+    }
 
     m_tileCount = tileCount;
     resetAllTiles();
@@ -326,7 +348,7 @@ void TileView::setTileSize(qreal tileSize)
     emit tileSizeChanged();
 }
 
-void TileView::setCenter(QVector3D center)
+void TileView::setCenter(const QVector3D &center)
 {
     if (center == m_centerPosition)
         return;

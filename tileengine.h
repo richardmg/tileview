@@ -22,7 +22,7 @@ class TileView : public QQuick3DNode
     QML_ATTACHED(TileViewAttached)
     Q_INTERFACES(QQmlParserStatus)
 
-    Q_PROPERTY(int tileCount READ tileCount WRITE setTileCount NOTIFY tileCountChanged)
+    Q_PROPERTY(QVector3D tileCount READ tileCount WRITE setTileCount NOTIFY tileCountChanged)
     Q_PROPERTY(qreal tileSize READ tileSize WRITE setTileSize NOTIFY tileSizeChanged)
     Q_PROPERTY(QVector3D center READ center WRITE setCenter NOTIFY centerChanged)
     Q_PROPERTY(QQmlComponent *delegate READ delegate WRITE setDelegate NOTIFY delegateChanged)
@@ -31,14 +31,14 @@ public:
     explicit TileView(QQuick3DNode *parent = nullptr);
     ~TileView() override;
 
-    int tileCount() const;
-    void setTileCount(int tileCount);
+    QVector3D tileCount() const;
+    void setTileCount(const QVector3D &tileCount);
 
     qreal tileSize() const;
     void setTileSize(qreal tileSize);
 
     QVector3D center() const;
-    void setCenter(QVector3D center);
+    void setCenter(const QVector3D &center);
 
     QQmlComponent* delegate() const;
     void setDelegate(QQmlComponent *delegate);
@@ -70,12 +70,15 @@ private:
     void shiftMatrixAlongX(int shiftCount);
     void shiftMatrixAlongY(int shiftCount);
     void shiftMatrixAlongZ(int shiftCount);
-    int matrixCoordShifted(int startCoord, int shiftCount) const;
+
+    int matrixCoordShiftedX(int startCoord, int shiftCount) const;
+    int matrixCoordShiftedY(int startCoord, int shiftCount) const;
+    int matrixCoordShiftedZ(int startCoord, int shiftCount) const;
 
     TileViewAttached *getAttachedObject(const QObject *obj) const;
 
 private:
-    int m_tileCount = 0;
+    QVector3D m_tileCount;
     qreal m_tileSize = 100;
     QVector3D m_centerPosition;
 
