@@ -13,18 +13,46 @@ Window {
     visible: true
     color: "#848895"
 
-    TileEngine {
+    Row {
+        anchors.fill: parent
+        spacing: 10
 
+        View3D {
+            height: parent.height
+            width: parent.width / 2
+            camera: personCamera
+            importScene: scene
+        }
+
+        View3D {
+            height: parent.height
+            width: parent.width / 2
+            camera: droneCamera
+            importScene: scene
+        }
     }
 
-    View3D {
-        id: v3d
-        anchors.fill: parent
-        camera: camera
+    Node {
+        id: scene
 
         PerspectiveCamera {
-            id: camera
+            id: personCamera
             position: Qt.vector3d(0, 0, 600)
+            Model {
+                source: "#Cone"
+                eulerRotation: Qt.vector3d(-90, 0, 0)
+                materials: [
+                    DefaultMaterial {
+                        diffuseColor: "red"
+                    }
+                ]
+            }
+        }
+
+        PerspectiveCamera {
+            id: droneCamera
+            position: Qt.vector3d(personCamera.x, 1000, personCamera.z)
+            eulerRotation: Qt.vector3d(-90, 0, 0)
         }
 
         DirectionalLight {
@@ -40,10 +68,9 @@ Window {
         }
 
         Model {
-            scale: Qt.vector3d(100, 100, 100)
-            geometry: ExampleTriangleGeometry {
-                uv: true
-            }
+//            scale: Qt.vector3d(100, 100, 100)
+            source: "#Cube"
+//            geometry: ExampleTriangleGeometry { uv: true }
             materials: [
                 DefaultMaterial {
                     Texture {
@@ -57,10 +84,19 @@ Window {
                 }
             ]
         }
+
+        TileEngine {
+            targetPosition: personCamera.position // local or world
+            tileSize: 100
+            rowCount: 4
+//            delegate: Model {
+
+//            }
+        }
     }
 
     WasdController {
-        controlledObject: camera
+        controlledObject: personCamera
     }
 
 }
