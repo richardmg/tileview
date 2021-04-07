@@ -85,7 +85,7 @@ void TileEngine::updateAllTiles()
 //            setNeighbours(m_tileMoveDesc[matrixX].matrixCoord, ref m_tileMoveDesc[matrixX].neighbours);
         }
 
-        updateTiles(m_tileMoveDesc);
+        updateDelegateNodes(m_tileMoveDesc);
 //        updateNeighbours(m_tileMoveDesc);
     }
 }
@@ -129,7 +129,7 @@ void TileEngine::updateTilesHelp(int shifted, int topRightX, int topRightY, bool
         }
 
         if (i < shiftCount)
-            updateTiles(m_tileMoveDesc);
+            updateDelegateNodes(m_tileMoveDesc);
 //        if (neighbourCallback != null)
 //            neighbourCallback(m_tileMoveDesc);
     }
@@ -176,7 +176,7 @@ QPoint TileEngine::tileCoordAtWorldPos(QVector3D worldPos) const
     return QPoint(tileX, tileY);
 }
 
-void TileEngine::updateTiles(const QVector<TileDescription> &tiles)
+void TileEngine::updateDelegateNodes(const QVector<TileDescription> &tiles)
 {
     qDebug() << "Update tiles:";
     for (const auto &tile : qAsConst(tiles)) {

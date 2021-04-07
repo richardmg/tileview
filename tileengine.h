@@ -61,7 +61,7 @@ signals:
     void delegateChanged();
 
 public:
-    virtual void updateTiles(const QVector<TileDescription> &tiles);
+    virtual void updateDelegateNodes(const QVector<TileDescription> &tiles);
     virtual void updateNeighbours(const QVector<TileNeighbours> &neighbours);
 
 protected:
