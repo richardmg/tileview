@@ -270,6 +270,9 @@ void TileView::setCenter(const QVector3D &center)
     if (!isComponentComplete())
         return;
 
+    // Update the corner tile (which is the tile that represents the delegate
+    // furthest away from center along the positive axis). This will by used as
+    // a corner stone for calculating the position of the other delegate in updateTiles().
     const QVector3D oldTileCoord = mapPositionToTileCoordShifted(oldCenterPosition);
     const QVector3D newTileCoord = mapPositionToTileCoordShifted(m_centerPosition);
     const QVector3D shiftedTiles = newTileCoord - oldTileCoord;
