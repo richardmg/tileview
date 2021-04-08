@@ -19,7 +19,6 @@ Window {
         camera: personCamera
         importScene: scene
         environment: SceneEnvironment {
-//            backgroundMode: SceneEnvironment.SkyBox
             clearColor: Qt.rgba(0.6, 0.6, 0.9, 1.0)
             backgroundMode: SceneEnvironment.Color
             probeOrientation: Qt.vector3d(0, -90, 0)
@@ -72,11 +71,11 @@ Window {
                 }
             }
 
-            Connections {
-                target: personCamera
-                function onRotationChanged() { tileView.direction = personCamera.forward }
-            }
-            Component.onCompleted: direction = personCamera.forward
+//            Connections {
+//                target: personCamera
+//                function onRotationChanged() { tileView.direction = personCamera.forward }
+//            }
+//            Component.onCompleted: direction = personCamera.forward
         }
 
         PerspectiveCamera {

@@ -26,9 +26,6 @@ Window {
             camera: personCamera
             importScene: scene
             environment: SceneEnvironment {
-                //            backgroundMode: SceneEnvironment.SkyBox
-                //            clearColor: Qt.rgba(0.1, 0.1, 0.1, 1.0)
-                //            backgroundMode: SceneEnvironment.Color
                 probeOrientation: Qt.vector3d(0, -90, 0)
                 lightProbe: Texture {
                     source: "maps/OpenfootageNET_garage-1024.hdr"
