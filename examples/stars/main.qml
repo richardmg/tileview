@@ -92,13 +92,6 @@ Window {
             }
         }
 
-        DirectionalLight {
-            position: Qt.vector3d(500, 500, 500)
-            eulerRotation: Qt.vector3d(-70, 45, 0)
-            color: Qt.rgba(1.0, 1.0, 1.0, 1.0)
-            ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
-        }
-
     }
 
     WasdController {
