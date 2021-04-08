@@ -48,27 +48,22 @@ Window {
     Node {
         id: scene
 
-        Model {
-            materials: [ DefaultMaterial { diffuseColor: "green" } ]
-            geometry: LandTile {
+//        Model {
+//            materials: [ DefaultMaterial { diffuseColor: "green" } ]
+//            geometry: LandTile {
 
-            }
-        }
+//            }
+//        }
 
 
         TileView {
             id: tileView
-
-            // OBS
-            visible: false
-
             center: personCamera.position
-            tileSize: Qt.vector3d(200, 10, 200)
+            tileSize: Qt.vector3d(100, 1, 100)
             tileCount: Qt.vector3d(8, 1, 8)
 
             delegate: Model {
                 id: delegate
-                scale: Qt.vector3d(20.0, 20.0, 20.0)
                 materials: [ DefaultMaterial { diffuseColor: "green" } ]
                 geometry: LandTile {
 
