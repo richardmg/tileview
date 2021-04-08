@@ -45,7 +45,7 @@ void LandTile::setTileSize(QVector3D tileSize)
         return;
 
     m_tileSize = tileSize;
-    recreate();
+    updateData();
     emit tileSizeChanged();
 }
 
@@ -79,13 +79,27 @@ void LandTile::setPosition(QVector3D position)
     emit positionChanged();
 }
 
+QVector3D LandTile::sampleScale() const
+{
+    return m_sampleScale;
+}
+
+void LandTile::setSampleScale(QVector3D sampleScale)
+{
+    if (m_sampleScale == sampleScale)
+        return;
+
+    m_sampleScale = sampleScale;
+    updateData();
+    emit sampleScaleChanged();
+}
+
 float LandTile::getHeight(const QVector2D &pos)
 {
-    const qreal sampleDistanceScale = 0.1;
-    const qreal posX = (m_position.x() + pos.x()) * sampleDistanceScale;
-    const qreal posY = (m_position.z() + pos.y()) * sampleDistanceScale;
+    const qreal posX = (m_position.x() + pos.x()) * m_sampleScale.x();
+    const qreal posY = (m_position.z() + pos.y()) * m_sampleScale.z();
     const qreal height = m_perlin.noise(posX, posY, 0.1);
-    return height * 10;
+    return height;//* 10;
 }
 
 void LandTile::updateData()

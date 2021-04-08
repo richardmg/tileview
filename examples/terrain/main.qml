@@ -14,12 +14,32 @@ Window {
     visible: true
     color: "#848895"
 
-    Slider {
-        id: slider
-        from: 5
-        to: 20
-        value: 10
+    Column {
         z: 100
+        Slider {
+            id: resolutionSlider
+            width: 200
+            from: 1
+            to: 60
+            value: 30
+            onValueChanged: print("resolution:", value)
+        }
+        Slider {
+            id: sampleSlider
+            width: 200
+            from: 0.0001
+            to: 0.05
+            value: 0.001
+            onValueChanged: print("sample:", value)
+        }
+        Slider {
+            id: scaleSlider
+            width: 200
+            from: 1
+            to: 300
+            value: 175
+            onValueChanged: print("scale:", value)
+        }
     }
 
     View3D {
@@ -59,24 +79,30 @@ Window {
         TileView {
             id: tileView
             center: personCamera.position
-            tileSize: Qt.vector3d(100, 1, 100)
+            tileSize: Qt.vector3d(1000, 1, 1000)
             tileCount: Qt.vector3d(20, 1, 20)
 
             delegate: Model {
                 id: delegate
+                scale: Qt.vector3d(1, delegate.parent.scaleSlider.value, 1);
                 materials: [ DefaultMaterial { diffuseColor: "green" } ]
                 geometry: LandTile {
-                    resolution: Qt.vector3d(30, 30, 30)
+                    resolution: Qt.vector3d(delegate.parent.resolutionSlider.value, delegate.parent.resolutionSlider.value, delegate.parent.resolutionSlider.value)
+                    sampleScale: Qt.vector3d(delegate.parent.sampleSlider.value, delegate.parent.sampleSlider.value, delegate.parent.sampleSlider.value);
                     tileSize: delegate.parent.tileSize
                     position: delegate.position
                 }
             }
 
-            Connections {
-                target: personCamera
-                function onRotationChanged() { tileView.direction = personCamera.forward }
-            }
-            Component.onCompleted: direction = personCamera.forward
+            property alias resolutionSlider: resolutionSlider
+            property alias sampleSlider: sampleSlider
+            property alias scaleSlider: scaleSlider
+
+//            Connections {
+//                target: personCamera
+//                function onRotationChanged() { tileView.direction = personCamera.forward }
+//            }
+//            Component.onCompleted: direction = personCamera.forward
         }
 
         PerspectiveCamera {
@@ -103,8 +129,8 @@ Window {
         }
 
         DirectionalLight {
-            position: Qt.vector3d(500, 500, 500)
-            eulerRotation: Qt.vector3d(-70, 45, 0)
+            position: Qt.vector3d(500, 500, 0)
+            eulerRotation: Qt.vector3d(-45, 0, 0)
             color: Qt.rgba(1.0, 1.0, 1.0, 1.0)
             ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
         }
