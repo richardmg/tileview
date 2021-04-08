@@ -43,29 +43,38 @@ Window {
         TileView {
             id: tileView
             center: personCamera.position
-            tileSize: Qt.vector3d(400, 400, 400)
-            tileCount: Qt.vector3d(6, 6, 6)
+            tileSize: Qt.vector3d(800, 800, 800)
+            tileCount: Qt.vector3d(4, 4, 4)
 
             delegate: Node {
+                id: delegate
+
+                TileView.onTileChanged: {
+                    anim.duration = Math.random(10000) + Math.abs(10000 * (TileView.tile.x + TileView.tile.z))
+                    anim.restart()
+                }
+
                 Star {
+                    id: star
                     instancing: randomInstancing
-                    SequentialAnimation on eulerRotation {
+                    PropertyAnimation {
+                        id: anim
+                        target: star
                         loops: Animation.Infinite
-                        PropertyAnimation {
-                            duration: Math.random(10000) + 10000
-                            from: Qt.vector3d(0, 0, 0)
-                            to: Qt.vector3d(360, 360, 360)
-                        }
+                        property: "eulerRotation"
+                        from: Qt.vector3d(0, 0, 0)
+                        to: Qt.vector3d(360, 360, 360)
                     }
                 }
+
                 RandomInstancing {
                     id: randomInstancing
-                    instanceCount: 300
-                    randomSeed: 2021
-
+                    instanceCount: delegate.parent.tileSize.x / 3
                     position: InstanceRange {
-                        from: Qt.vector3d(-200, -200, -200)
-                        to: Qt.vector3d(200, 200, 200)
+                        from: Qt.vector3d(delegate.parent.tileSize.x / 2,
+                                          delegate.parent.tileSize.y / 2,
+                                          delegate.parent.tileSize.z / 2)
+                        to: from.times(-1)
                     }
                 }
             }
