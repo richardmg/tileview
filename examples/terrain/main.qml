@@ -5,6 +5,7 @@ import QtQuick3D
 import QtQuick3D.Helpers
 
 import QtQuick3D.TileView
+import LandTile
 
 Window {
     id: window
@@ -55,28 +56,22 @@ Window {
 
             delegate: Model {
                 id: delegate
-                source: "#Cube"
-                scale: Qt.vector3d(1.7, 0.1, 1.7)
-                materials: [ DefaultMaterial { diffuseColor: startColor } ]
+                scale: Qt.vector3d(20.0, 20.0, 20.0)
+                materials: [ DefaultMaterial { diffuseColor: "green" } ]
+                geometry: LandTile {
 
-                property color startColor: undefined
+                }
+
                 TileView.onTileChanged: {
-                    if (startColor != "#000000") {
-                        // Only assign a color based on start tile
-                        return
-                    }
-                    if (TileView.tile.x === 0 || TileView.tile.z === 0)
-                        startColor = "red"
-                    else
-                        startColor = "white"
+                    print("fix up landscape at tile:", TileView.tile)
                 }
             }
 
-            Connections {
-                target: personCamera
-                function onRotationChanged() { tileView.direction = personCamera.forward }
-            }
-            Component.onCompleted: direction = personCamera.forward
+//            Connections {
+//                target: personCamera
+//                function onRotationChanged() { tileView.direction = personCamera.forward }
+//            }
+//            Component.onCompleted: direction = personCamera.forward
         }
 
         PerspectiveCamera {
