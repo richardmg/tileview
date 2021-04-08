@@ -50,6 +50,7 @@ Window {
                 id: delegate
 
                 TileView.onTileChanged: {
+                    print("got tile:", TileView.tile)
                     anim.duration = Math.random(10000) + Math.abs(10000 * (TileView.tile.x + TileView.tile.z))
                     anim.restart()
                 }

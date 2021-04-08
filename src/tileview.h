@@ -115,8 +115,8 @@ signals:
     void tileChanged();
 
 private:
-    QPointer<TileView> m_view;
-    QVector3D m_tile;
+    QPointer<TileView> m_view = nullptr;
+    QVector3D m_tile = QVector3D(std::numeric_limits<float>::infinity(), 0, 0);
 };
 
 #endif // TILEVIEW_H

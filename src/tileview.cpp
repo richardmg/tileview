@@ -172,6 +172,7 @@ void TileView::recreateDelegates()
         node->setParentItem(this);
         node->setParent(this);
         node->setVisible(false);
+        getAttachedObject(node)->setView(this);
         m_delegateNodes.append(node);
     }
 }
@@ -324,7 +325,6 @@ void TileViewAttached::setView(TileView *tileView)
         return;
 
     m_view = tileView;
-
     emit viewChanged();
 }
 
@@ -339,10 +339,9 @@ void TileViewAttached::setTile(const QVector3D &tile)
     // that happens to be on 0,0,0, we emit it as changed anyway.
     // That way the delegate can know in a uniform way, when it's
     // time to update it's contents.
-    if (m_tile == tile && !m_tile.isNull())
+    if (m_tile == tile)
         return;
 
     m_tile = tile;
-
     emit tileChanged();
 }
