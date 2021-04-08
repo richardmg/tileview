@@ -19,11 +19,11 @@ DYNAMIC_QMLDIR = \
 "TileView 1.0 TileView.qml"
 
 SOURCES += \
-    tileviewplugin.cpp \
-    tileengine.cpp
+    tileview.cpp \
+    tileviewplugin.cpp
 
 HEADERS += \
-    tileengine.h
+    tileview.h
 
 CONFIG += qt plugin
 CONFIG += no_cxx_module install_qml_files qtquickcompiler
