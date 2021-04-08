@@ -4,11 +4,6 @@
 
 LandTile::LandTile()
 {
-    setStride(3 * sizeof(float));
-    setPrimitiveType(QQuick3DGeometry::PrimitiveType::Triangles);
-    addAttribute(QQuick3DGeometry::Attribute::PositionSemantic, 0, QQuick3DGeometry::Attribute::F32Type);
-
-    recreate();
 }
 
 void LandTile::componentComplete()
@@ -19,16 +14,18 @@ void LandTile::componentComplete()
 
 void LandTile::recreate()
 {
-//    if (!isComponentComplete())
-//        return;
+    if (!isComponentComplete())
+        return;
 
     clear();
 
+    setStride(3 * sizeof(float));
+    setPrimitiveType(QQuick3DGeometry::PrimitiveType::Triangles);
+    addAttribute(QQuick3DGeometry::Attribute::PositionSemantic, 0, QQuick3DGeometry::Attribute::F32Type);
+
     const int vertexCountPerSquare = 6; // two triangles
     const int vertexCount = m_resolution.x() * m_resolution.z() * vertexCountPerSquare;
-//    m_vertexData.resize(vertexCount * stride());
-    m_vertexData = QByteArray(vertexCount * stride(), Qt::Initialization::Uninitialized);
-    qDebug() << "size:" << m_vertexData.size() << m_resolution;
+    m_vertexData.resize(vertexCount * stride());
 
     updateData();
 }
@@ -90,7 +87,6 @@ void LandTile::updateData()
     float *p = reinterpret_cast<float *>(m_vertexData.data());
     const float distX = m_tileSize.x() / m_resolution.x();
     const float distZ = m_tileSize.z() / m_resolution.z();
-    qDebug() << "DIST:" << distX << distZ;
 
     // Front face = counter-clockwise
     for (int x = 0; x < m_resolution.x(); ++x) {
