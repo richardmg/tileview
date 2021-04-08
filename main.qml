@@ -68,7 +68,7 @@ Window {
             id: tileView
             center: personCamera.position
             tileSize: Qt.vector3d(500, 500, 500)
-            tileCount: Qt.vector3d(2, 1, 2)
+            tileCount: Qt.vector3d(2, 2, 2)
 
             Connections {
                 target: personCamera

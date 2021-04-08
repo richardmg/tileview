@@ -80,7 +80,7 @@ private:
     int matrixCoordShiftedY(int startCoord, int shiftCount) const;
     int matrixCoordShiftedZ(int startCoord, int shiftCount) const;
 
-    void updateWhichTilesAreVisible();
+    void updateTiles();
 
     TileViewAttached *getAttachedObject(const QObject *obj) const;
 
