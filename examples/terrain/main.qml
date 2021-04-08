@@ -48,8 +48,20 @@ Window {
     Node {
         id: scene
 
+        Model {
+            materials: [ DefaultMaterial { diffuseColor: "green" } ]
+            geometry: LandTile {
+
+            }
+        }
+
+
         TileView {
             id: tileView
+
+            // OBS
+            visible: false
+
             center: personCamera.position
             tileSize: Qt.vector3d(200, 10, 200)
             tileCount: Qt.vector3d(8, 1, 8)
@@ -63,7 +75,7 @@ Window {
                 }
 
                 TileView.onTileChanged: {
-                    print("fix up landscape at tile:", TileView.tile)
+//                    print("fix up landscape at tile:", TileView.tile)
                 }
             }
 
