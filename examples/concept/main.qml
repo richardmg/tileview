@@ -39,7 +39,7 @@ Window {
         camera: droneCamera
         importScene: scene
         environment: SceneEnvironment {
-            clearColor: Qt.rgba(0.8, 0.8, 0.8, 1.0)
+            clearColor: Qt.rgba(0.5, 0.5, 0.5, 1.0)
             backgroundMode: SceneEnvironment.Color
         }
     }
@@ -54,13 +54,22 @@ Window {
             tileCount: Qt.vector3d(8, 1, 8)
 
             delegate: Model {
+                id: delegate
                 source: "#Cube"
                 scale: Qt.vector3d(1.7, 0.1, 1.7)
-                materials: [
-                    DefaultMaterial {
-                        diffuseColor: "green"
+                materials: [ DefaultMaterial { diffuseColor: startColor } ]
+
+                property color startColor: undefined
+                TileView.onTileChanged: {
+                    if (startColor != "#000000") {
+                        // Only assign a color based on start tile
+                        return
                     }
-                ]
+                    if (TileView.tile.x === 0 || TileView.tile.z === 0)
+                        startColor = "red"
+                    else
+                        startColor = "white"
+                }
             }
 
 //            Connections {
