@@ -13,34 +13,27 @@ Window {
     visible: true
     color: "#848895"
 
-    View3D {
-        id: mainView
+    Rectangle {
         anchors.fill: parent
-        camera: personCamera
-        importScene: scene
-        environment: SceneEnvironment {
-//            backgroundMode: SceneEnvironment.SkyBox
-            clearColor: Qt.rgba(0.1, 0.1, 0.1, 1.0)
-            backgroundMode: SceneEnvironment.Color
-            probeOrientation: Qt.vector3d(0, -90, 0)
-            lightProbe: Texture {
-                source: "maps/OpenfootageNET_garage-1024.hdr"
-            }
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0.05, 1) }
+            GradientStop { position: 1.0; color: Qt.rgba(0.15, 0.15, 0.15, 1) }
         }
-    }
 
-    View3D {
-        id: droneView
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: 10
-        height: 150
-        width: 250
-        camera: droneCamera
-        importScene: scene
-        environment: SceneEnvironment {
-            clearColor: Qt.rgba(0.8, 0.8, 0.8, 1.0)
-            backgroundMode: SceneEnvironment.Color
+        View3D {
+            id: mainView
+            anchors.fill: parent
+            camera: personCamera
+            importScene: scene
+            environment: SceneEnvironment {
+                //            backgroundMode: SceneEnvironment.SkyBox
+                //            clearColor: Qt.rgba(0.1, 0.1, 0.1, 1.0)
+                //            backgroundMode: SceneEnvironment.Color
+                probeOrientation: Qt.vector3d(0, -90, 0)
+                lightProbe: Texture {
+                    source: "maps/OpenfootageNET_garage-1024.hdr"
+                }
+            }
         }
     }
 
@@ -99,14 +92,6 @@ Window {
                     }
                 ]
             }
-        }
-
-        OrthographicCamera {
-            id: droneCamera
-            position: Qt.vector3d(personCamera.x, personCamera.y + 1000, personCamera.z)
-            eulerRotation: Qt.vector3d(-90, 0, 0)
-            horizontalMagnification: 0.1
-            verticalMagnification: 0.1
         }
 
         DirectionalLight {

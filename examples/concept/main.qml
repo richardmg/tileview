@@ -34,7 +34,7 @@ Window {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 10
-        height: 150
+        height: 250
         width: 250
         camera: droneCamera
         importScene: scene
