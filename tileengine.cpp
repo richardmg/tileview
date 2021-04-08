@@ -218,6 +218,42 @@ void TileView::shiftMatrixAlongZ(int shiftCount)
     }
 }
 
+void TileView::updateWhichTilesAreVisible()
+{
+    Tile tile;
+    for (int matrixZ = 0; matrixZ < int(m_tileCount.z()); ++matrixZ) {
+        for (int matrixY = 0; matrixY < int(m_tileCount.y()); ++matrixY) {
+            for (int matrixX = 0; matrixX < int(m_tileCount.x()); ++matrixX) {
+                tile.matrixCoord = QVector3D(matrixX, matrixY, matrixZ);
+                tile.tileCoord = tile.matrixCoord;
+                tile.position = mapTileCoordToPosition(tile.tileCoord);
+                updateDelegate(tile);
+            }
+        }
+    }
+}
+
+// *******************************************************************
+
+void TileView::componentComplete()
+{
+    QQuick3DNode::componentComplete();
+    resetAllTiles();
+}
+
+TileViewAttached *TileView::getAttachedObject(const QObject *obj) const
+{
+    QObject *attachedObject = qmlAttachedPropertiesObject<TileView>(obj);
+    return static_cast<TileViewAttached *>(attachedObject);
+}
+
+TileViewAttached *TileView::qmlAttachedProperties(QObject *obj)
+{
+    return new TileViewAttached(obj);
+}
+
+// *******************************************************************
+
 void TileView::recreateDelegates()
 {
     qDeleteAll(m_delegateNodes);
@@ -237,15 +273,13 @@ void TileView::recreateDelegates()
         }
         node->setParentItem(this);
         node->setParent(this);
-        node->setVisible(true);
+        node->setVisible(false);
         m_delegateNodes.append(node);
     }
 }
 
 void TileView::updateDelegate(const Tile &tile)
 {
-    // NOTE: Should I take scale into account?
-
     int index = tile.matrixCoord.x()
             + (tile.matrixCoord.y() * int(m_tileCount.x()))
             + (tile.matrixCoord.z() * int(m_tileCount.x()) * int(m_tileCount.y()));
@@ -254,25 +288,19 @@ void TileView::updateDelegate(const Tile &tile)
     const QVector3D centerVector((int(m_tileCount.x()) - 1) * m_tileSize.x() / 2,
                                  (int(m_tileCount.y()) - 1) * m_tileSize.y() / 2,
                                  (int(m_tileCount.z()) - 1) * m_tileSize.z() / 2);
-    node->setPosition(tile.position - centerVector);
-    getAttachedObject(node)->setTile(tile.tileCoord);
-}
+    const QVector3D delegatePosition = tile.position - centerVector;
 
-void TileView::componentComplete()
-{
-    QQuick3DNode::componentComplete();
-    resetAllTiles();
-}
+    const float inFrontOfCamera = QVector3D::dotProduct(delegatePosition, m_direction) > 0;
+    node->setVisible(inFrontOfCamera || m_direction.isNull());
 
-TileViewAttached *TileView::getAttachedObject(const QObject *obj) const
-{
-    QObject *attachedObject = qmlAttachedPropertiesObject<TileView>(obj);
-    return static_cast<TileViewAttached *>(attachedObject);
-}
+    if (tile.tileCoord == QVector3D(0, 0, 0))
+        qDebug() << QVector3D::dotProduct(delegatePosition, m_direction) << inFrontOfCamera;
 
-TileViewAttached *TileView::qmlAttachedProperties(QObject *obj)
-{
-    return new TileViewAttached(obj);
+    if (node->visible()) {
+        // Only tell the delegate to update / rebuild if it's actually visible
+        node->setPosition(delegatePosition);
+        getAttachedObject(node)->setTile(tile.tileCoord);
+    }
 }
 
 // *******************************************************************
@@ -375,8 +403,8 @@ void TileView::setDirection(QVector3D direction)
     if (m_direction == direction)
         return;
 
-    qDebug() << "new dir:" << direction;
     m_direction = direction;
+    updateWhichTilesAreVisible();
     emit directionChanged();
 }
 
@@ -417,5 +445,4 @@ void TileViewAttached::setTile(const QVector3D &tile)
     m_tile = tile;
 
     emit tileChanged();
-
 }

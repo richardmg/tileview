@@ -80,13 +80,15 @@ private:
     int matrixCoordShiftedY(int startCoord, int shiftCount) const;
     int matrixCoordShiftedZ(int startCoord, int shiftCount) const;
 
+    void updateWhichTilesAreVisible();
+
     TileViewAttached *getAttachedObject(const QObject *obj) const;
 
 private:
     QVector3D m_tileCount;
     QVector3D m_tileSize;
     QVector3D m_centerPosition;
-    QVector3D m_direction;
+    QVector3D m_direction = QVector3D(0, 0, -1);
 
     QPoint m_shiftedTileCoord;
     QPoint m_prevShiftedTileCoord;
