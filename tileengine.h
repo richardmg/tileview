@@ -1,5 +1,5 @@
-#ifndef TILEENGINE_H
-#define TILEENGINE_H
+#ifndef TILEVIEW_H
+#define TILEVIEW_H
 
 #include <QtCore/QtCore>
 #include <QtQml/QtQml>
@@ -119,4 +119,4 @@ private:
     QVector3D m_tile;
 };
 
-#endif // TILEENGINE_H
+#endif // TILEVIEW_H

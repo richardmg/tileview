@@ -1,3 +1,5 @@
+TEMPLATE = lib
+
 QT += quick quick3d
 QT += quick3d-private
 
@@ -5,21 +7,26 @@ CONFIG += qmltypes
 QML_IMPORT_NAME = TileEngine
 QML_IMPORT_MAJOR_VERSION = 1
 
-target.path = $$[QT_INSTALL_EXAMPLES]/quick3d/customgeometry
-INSTALLS += target
+TARGET = TileView
+TARGETPATH = QtQuick3D/TileView
+
+QML_IMPORT_NAME = QtQuick3D.TileView
+
+DYNAMIC_QMLDIR = \
+"module TileView" \
+"plugin tileviewplugin" \
+"classname TileViewPlugin" \
+"TileView 1.0 TileView.qml"
 
 SOURCES += \
-    main.cpp \
-    examplegeometry.cpp \
+    tileviewplugin.cpp \
     tileengine.cpp
 
 HEADERS += \
-    examplegeometry.h \
     tileengine.h
 
-RESOURCES += \
-    resources.qrc \
-    materials.qrc
+CONFIG += qt plugin
+CONFIG += no_cxx_module install_qml_files qtquickcompiler
+CONFIG += qmltypes install_qmltypes
 
-OTHER_FILES += \
-    doc/src/*.*
+load(qml_plugin)
