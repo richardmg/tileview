@@ -49,13 +49,13 @@ Window {
         TileView {
             id: tileView
             center: personCamera.position
-            tileSize: Qt.vector3d(200, 10, 200)
-            tileCount: Qt.vector3d(8, 1, 8)
+            tileSize: Qt.vector3d(100, 10, 100)
+            tileCount: Qt.vector3d(20, 1, 20)
 
             delegate: Model {
                 id: delegate
                 source: "#Cube"
-                scale: Qt.vector3d(1.7, 0.1, 1.7)
+                scale: Qt.vector3d(0.9, 0.1, 0.9)
                 materials: [ DefaultMaterial { diffuseColor: startColor } ]
 
                 property color startColor: undefined

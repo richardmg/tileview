@@ -107,7 +107,7 @@ Window {
 
         PerspectiveCamera {
             id: personCamera
-            position: Qt.vector3d(0, 100, 0)
+            position: Qt.vector3d(0, 110, 0)
             Model {
                 source: "#Cone"
                 scale: Qt.vector3d(2.0, 2.0, 2.0)
