@@ -65,9 +65,18 @@ Window {
 //        }
 
         TileView {
+            id: tileView
             center: personCamera.position
             tileSize: Qt.vector3d(500, 500, 500)
             tileCount: Qt.vector3d(6, 6, 6)
+
+            Connections {
+                target: personCamera
+                function onRotationChanged()
+                {
+                    tileView.direction = personCamera.forward
+                }
+            }
 
             delegate: Node {
                 Star {

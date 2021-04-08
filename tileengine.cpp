@@ -365,6 +365,21 @@ void TileView::setCenter(const QVector3D &center)
     emit centerChanged();
 }
 
+QVector3D TileView::direction() const
+{
+    return m_direction;
+}
+
+void TileView::setDirection(QVector3D direction)
+{
+    if (m_direction == direction)
+        return;
+
+    qDebug() << "new dir:" << direction;
+    m_direction = direction;
+    emit directionChanged();
+}
+
 TileViewAttached::TileViewAttached(QObject *parent)
     : QObject(parent)
 {
