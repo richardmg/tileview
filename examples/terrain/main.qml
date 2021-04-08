@@ -14,6 +14,14 @@ Window {
     visible: true
     color: "#848895"
 
+    Slider {
+        id: slider
+        from: 5
+        to: 20
+        value: 10
+        z: 100
+    }
+
     View3D {
         id: mainView
         anchors.fill: parent
@@ -48,37 +56,27 @@ Window {
     Node {
         id: scene
 
-//        Model {
-//            materials: [ DefaultMaterial { diffuseColor: "green" } ]
-//            geometry: LandTile {
-
-//            }
-//        }
-
-
         TileView {
             id: tileView
             center: personCamera.position
             tileSize: Qt.vector3d(100, 1, 100)
-            tileCount: Qt.vector3d(8, 1, 8)
+            tileCount: Qt.vector3d(20, 1, 20)
 
             delegate: Model {
                 id: delegate
                 materials: [ DefaultMaterial { diffuseColor: "green" } ]
                 geometry: LandTile {
-
-                }
-
-                TileView.onTileChanged: {
-//                    print("fix up landscape at tile:", TileView.tile)
+                    resolution: Qt.vector3d(30, 30, 30)
+                    tileSize: delegate.parent.tileSize
+                    position: delegate.position
                 }
             }
 
-//            Connections {
-//                target: personCamera
-//                function onRotationChanged() { tileView.direction = personCamera.forward }
-//            }
-//            Component.onCompleted: direction = personCamera.forward
+            Connections {
+                target: personCamera
+                function onRotationChanged() { tileView.direction = personCamera.forward }
+            }
+            Component.onCompleted: direction = personCamera.forward
         }
 
         PerspectiveCamera {

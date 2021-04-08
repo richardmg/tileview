@@ -25,9 +25,13 @@ void LandTile::recreate()
 
     const int vertexCountPerSquare = 6; // two triangles
     const int vertexCount = m_resolution.x() * m_resolution.z() * vertexCountPerSquare;
-    m_vertexData.resize(vertexCount * stride());
+    const int bufferSize = vertexCount * stride();
+
+    if (m_vertexData.size() != bufferSize)
+        m_vertexData.resize(vertexCount * stride());
 
     updateData();
+    markAllDirty();
 }
 
 QVector3D LandTile::tileSize() const
@@ -78,12 +82,17 @@ void LandTile::setPosition(QVector3D position)
 float LandTile::getHeight(const QVector2D &pos)
 {
     const qreal sampleDistanceScale = 0.1;
-    qreal height = m_perlin.noise(pos.x() * sampleDistanceScale, pos.y() * sampleDistanceScale, 0.1);
+    const qreal posX = (m_position.x() + pos.x()) * sampleDistanceScale;
+    const qreal posY = (m_position.z() + pos.y()) * sampleDistanceScale;
+    const qreal height = m_perlin.noise(posX, posY, 0.1);
     return height * 10;
 }
 
 void LandTile::updateData()
 {
+    if (!isComponentComplete())
+        return;
+
     float *p = reinterpret_cast<float *>(m_vertexData.data());
     const float distX = m_tileSize.x() / m_resolution.x();
     const float distZ = m_tileSize.z() / m_resolution.z();
@@ -108,4 +117,5 @@ void LandTile::updateData()
     }
 
     setVertexData(m_vertexData);
+    update();
 }
