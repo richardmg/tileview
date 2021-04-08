@@ -116,33 +116,6 @@ void TileView::resetAllTiles()
     }
 }
 
-void TileView::shiftMatrixAlongX(int shiftCount)
-{
-    // Update corner tile
-    m_cornerTile.tileCoord += QVector3D(shiftCount, 0, 0);
-    const int cornerX = int(m_cornerTile.matrixCoord.x());
-    const int newCornerX = matrixCoordShiftedX(cornerX, shiftCount);
-    m_cornerTile.matrixCoord.setX(newCornerX);
-}
-
-void TileView::shiftMatrixAlongY(int shiftCount)
-{
-    // Update corner tile
-    m_cornerTile.tileCoord += QVector3D(0, shiftCount, 0);
-    const int cornerY = int(m_cornerTile.matrixCoord.y());
-    const int newCornerY = matrixCoordShiftedY(cornerY, shiftCount);
-    m_cornerTile.matrixCoord.setY(newCornerY);
-}
-
-void TileView::shiftMatrixAlongZ(int shiftCount)
-{
-    // Update corner tile
-    m_cornerTile.tileCoord += QVector3D(0, 0, shiftCount);
-    const int cornerZ = int(m_cornerTile.matrixCoord.z());
-    const int newCornerZ = matrixCoordShiftedZ(cornerZ, shiftCount);
-    m_cornerTile.matrixCoord.setZ(newCornerZ);
-}
-
 void TileView::updateTiles()
 {
     Tile tile;
@@ -299,19 +272,18 @@ void TileView::setCenter(const QVector3D &center)
 
     const QVector3D oldTileCoord = mapPositionToTileCoordShifted(oldCenterPosition);
     const QVector3D newTileCoord = mapPositionToTileCoordShifted(m_centerPosition);
+    const QVector3D shiftedTiles = newTileCoord - oldTileCoord;
 
-    if (oldTileCoord != newTileCoord) {
+    m_cornerTile.tileCoord += shiftedTiles;
 
-        // RENAME TO shiftCornerX
+    const int cornerX = int(m_cornerTile.matrixCoord.x());
+    const int newCornerX = matrixCoordShiftedX(cornerX, shiftedTiles.x());
+    const int cornerY = int(m_cornerTile.matrixCoord.y());
+    const int newCornerY = matrixCoordShiftedY(cornerY, shiftedTiles.y());
+    const int cornerZ = int(m_cornerTile.matrixCoord.z());
+    const int newCornerZ = matrixCoordShiftedZ(cornerZ, shiftedTiles.z());
 
-        const QVector3D shiftedTiles = newTileCoord - oldTileCoord;
-        if (shiftedTiles.x() != 0 && m_tileCount.x() > 1)
-            shiftMatrixAlongX(shiftedTiles.x());
-        if (shiftedTiles.y() != 0 && m_tileCount.y() > 1)
-            shiftMatrixAlongY(shiftedTiles.y());
-        if (shiftedTiles.z() != 0 && m_tileCount.z() > 1)
-            shiftMatrixAlongZ(shiftedTiles.z());
-    }
+    m_cornerTile.matrixCoord = QVector3D(newCornerX, newCornerY, newCornerZ);
 
     updateTiles();
 

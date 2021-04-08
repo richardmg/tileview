@@ -72,10 +72,6 @@ private:
 
     void resetAllTiles();
 
-    void shiftMatrixAlongX(int shiftCount);
-    void shiftMatrixAlongY(int shiftCount);
-    void shiftMatrixAlongZ(int shiftCount);
-
     int matrixCoordShiftedX(int startCoord, int shiftCount) const;
     int matrixCoordShiftedY(int startCoord, int shiftCount) const;
     int matrixCoordShiftedZ(int startCoord, int shiftCount) const;
