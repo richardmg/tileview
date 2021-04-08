@@ -53,14 +53,6 @@ Window {
             tileSize: Qt.vector3d(200, 10, 200)
             tileCount: Qt.vector3d(8, 1, 8)
 
-//            Connections {
-//                target: personCamera
-//                function onRotationChanged()
-//                {
-//                    tileView.direction = personCamera.forward
-//                }
-//            }
-
             delegate: Model {
                 source: "#Cube"
                 scale: Qt.vector3d(1.7, 0.1, 1.7)
@@ -70,6 +62,15 @@ Window {
                     }
                 ]
             }
+
+//            Connections {
+//                target: personCamera
+//                function onRotationChanged()
+//                {
+//                    tileView.direction = personCamera.forward
+//                }
+//            }
+//            Component.onCompleted: direction = personCamera.forward
         }
 
         PerspectiveCamera {

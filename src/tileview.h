@@ -84,7 +84,7 @@ private:
     QVector3D m_tileCount;
     QVector3D m_tileSize;
     QVector3D m_centerPosition;
-    QVector3D m_direction = QVector3D(0, 0, -1);
+    QVector3D m_direction;
 
     QPoint m_shiftedTileCoord;
     QPoint m_prevShiftedTileCoord;
