@@ -46,14 +46,6 @@ Window {
             tileSize: Qt.vector3d(400, 400, 400)
             tileCount: Qt.vector3d(6, 6, 6)
 
-            Connections {
-                target: personCamera
-                function onRotationChanged()
-                {
-                    tileView.direction = personCamera.forward
-                }
-            }
-
             delegate: Node {
                 Star {
                     instancing: randomInstancing
@@ -77,6 +69,12 @@ Window {
                     }
                 }
             }
+
+            Connections {
+                target: personCamera
+                function onRotationChanged() { tileView.direction = personCamera.forward }
+            }
+            Component.onCompleted: direction = personCamera.forward
         }
 
         PerspectiveCamera {
