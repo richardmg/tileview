@@ -75,6 +75,12 @@ Window {
                     }
                 }
             }
+
+            Connections {
+                target: personCamera
+                function onRotationChanged() { tileView.direction = personCamera.forward }
+            }
+            Component.onCompleted: direction = personCamera.forward
         }
 
         PerspectiveCamera {
