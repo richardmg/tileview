@@ -87,16 +87,12 @@ Window {
                 scale: Qt.vector3d(1, delegate.parent.scaleSlider.value, 1);
                 materials: [ DefaultMaterial { diffuseColor: "green" } ]
                 geometry: LandTile {
-                    resolution: Qt.vector3d(delegate.parent.resolutionSlider.value, delegate.parent.resolutionSlider.value, delegate.parent.resolutionSlider.value)
-                    sampleScale: Qt.vector3d(delegate.parent.sampleSlider.value, delegate.parent.sampleSlider.value, delegate.parent.sampleSlider.value);
+                    resolution: Qt.vector3d(30, 30, 30)
+                    sampleScale: Qt.vector3d(0.001, 0.001, 0.001)
                     tileSize: delegate.parent.tileSize
                     position: delegate.position
                 }
             }
-
-            property alias resolutionSlider: resolutionSlider
-            property alias sampleSlider: sampleSlider
-            property alias scaleSlider: scaleSlider
 
             Connections {
                 target: personCamera
