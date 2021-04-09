@@ -82,7 +82,6 @@ Window {
 
             delegate: Model {
                 id: delegate
-                scale: Qt.vector3d(1, 175, 1);
 
                 materials: [
                     DefaultMaterial {
@@ -112,7 +111,7 @@ Window {
 
         PerspectiveCamera {
             id: personCamera
-            position: Qt.vector3d(0, 120, 0)
+            position: Qt.vector3d(0, 130, 0)
             Model {
                 source: "#Cone"
                 scale: Qt.vector3d(2.0, 2.0, 2.0)

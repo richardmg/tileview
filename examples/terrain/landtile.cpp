@@ -100,10 +100,22 @@ void LandTile::setSampleScale(QVector3D sampleScale)
 
 float LandTile::getHeight(const QVector2D &pos)
 {
-    const qreal posX = (m_position.x() + pos.x()) * m_sampleScale.x();
-    const qreal posY = (m_position.z() + pos.y()) * m_sampleScale.z();
-    const qreal height = m_perlin.noise(posX, posY, 0.1);
-    return height;//* 10;
+    const qreal posX = (m_position.x() + pos.x());
+    const qreal posY = (m_position.z() + pos.y());
+
+    const qreal height0 = 200;
+    const qreal height1 = 10;
+    const qreal height2 = 1;
+
+    const qreal scale0 = 0.001;
+    const qreal scale1 = 0.02;
+    const qreal scale2 = 0.1;
+
+    const qreal oct0 = m_perlin.noise(posX * scale0, posY * scale0, 0.1) * height0;
+    const qreal oct1 = m_perlin.noise(posX * scale1, posY * scale1, 0.1) * height1;
+    const qreal oct2 = m_perlin.noise(posX * scale2, posY * scale2, 0.1) * height2;
+
+    return oct0 + oct1 + oct2;
 }
 
 void LandTile::updateData()
