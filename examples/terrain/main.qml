@@ -48,12 +48,10 @@ Window {
         camera: personCamera
         importScene: scene
         environment: SceneEnvironment {
-//            backgroundMode: SceneEnvironment.SkyBox
-            clearColor: Qt.rgba(0.6, 0.6, 0.9, 1.0)
-            backgroundMode: SceneEnvironment.Color
+            backgroundMode: SceneEnvironment.SkyBox
             probeOrientation: Qt.vector3d(0, -90, 0)
             lightProbe: Texture {
-                source: "maps/OpenfootageNET_garage-1024.hdr"
+                source: "maps/OpenfootageNET_lowerAustria01-1024.hdr"
             }
         }
     }
@@ -129,7 +127,7 @@ Window {
 
         PerspectiveCamera {
             id: droneCamera
-            position: Qt.vector3d(personCamera.x, personCamera.y + 5000, personCamera.z)
+            position: Qt.vector3d(personCamera.x, personCamera.y + 6000, personCamera.z)
             eulerRotation: Qt.vector3d(-90, 0, 0)
         }
 
@@ -137,7 +135,7 @@ Window {
             position: Qt.vector3d(500, 500, 0)
             eulerRotation: Qt.vector3d(-45, 0, 0)
             color: Qt.rgba(1.0, 1.0, 1.0, 1.0)
-            ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
+            ambientColor: Qt.rgba(0.4, 0.4, 0.4, 1.0)
         }
 
     }
