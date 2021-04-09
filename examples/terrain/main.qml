@@ -79,7 +79,7 @@ Window {
         TileView {
             id: tileView
             center: personCamera.position
-            tileSize: Qt.vector3d(150, 1, 150)
+            tileSize: Qt.vector3d(300, 1, 300)
             tileCount: Qt.vector3d(20, 1, 20)
 
             delegate: Model {
@@ -90,8 +90,8 @@ Window {
                     DefaultMaterial {
                         diffuseMap: Texture {
                             source: "textures/grass.jpg"
-                            scaleU: 4
-                            scaleV: 4
+                            scaleU: 0.01
+                            scaleV: 0.01
                             mappingMode: Texture.UV
                         }
                     }
@@ -114,7 +114,7 @@ Window {
 
         PerspectiveCamera {
             id: personCamera
-            position: Qt.vector3d(0, 110, 0)
+            position: Qt.vector3d(0, 120, 0)
             Model {
                 source: "#Cone"
                 scale: Qt.vector3d(2.0, 2.0, 2.0)

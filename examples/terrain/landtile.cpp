@@ -124,10 +124,11 @@ void LandTile::updateData()
             QVector2D c2(x * distX, (z + 1) * distX);
             QVector2D c3(x * distX, z * distZ);
 
-            QVector2D uv0(1 / m_resolution.x(), 1 / m_resolution.z());
-            QVector2D uv1(1 / m_resolution.x(), 0);
-            QVector2D uv2(0, 1 / m_resolution.z());
-            QVector2D uv3(0, 0);
+            QVector2D uvOffset = QVector2D(m_position.x(),  m_position.z());
+            QVector2D uv0 = c0 + uvOffset;
+            QVector2D uv1 = c1 + uvOffset;
+            QVector2D uv2 = c2 + uvOffset;
+            QVector2D uv3 = c3 + uvOffset;
 
             COORD(c0);
             UV(uv0);
