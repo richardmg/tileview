@@ -189,7 +189,8 @@ void TileView::updateDelegate(const Tile &tile)
                                  (int(m_tileCount.z()) - 1) * m_tileSize.z() / 2);
     const QVector3D delegatePosition = tile.position - centerVector;
 
-    const float inFrontOfCamera = QVector3D::dotProduct(delegatePosition - m_centerPosition, m_direction) > 0;
+    const qreal tileSize = qMax(qMax(m_tileSize.x(), m_tileSize.y()), m_tileSize.z());
+    const float inFrontOfCamera = QVector3D::dotProduct(delegatePosition - m_centerPosition, m_direction) > -tileSize / 2;
     node->setVisible(inFrontOfCamera || m_direction.isNull());
 
     if (node->visible()) {
