@@ -5,5 +5,7 @@
         <file>maps/metallic/normal.jpg</file>
         <file>maps/metallic/metallic.jpg</file>
         <file>maps/metallic/basecolor.jpg</file>
+        <file>textures/grass.jpg</file>
+        <file>textures/ground.jpg</file>
     </qresource>
 </RCC>

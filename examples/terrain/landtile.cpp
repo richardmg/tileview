@@ -1,6 +1,7 @@
 #include "landtile.h"
 
 #define COORD(v) *p++ = v.x(); *p++ = getHeight(v); *p++ = v.y()
+#define UV(v) *p++ = v.x(); *p++ = v.y()
 
 LandTile::LandTile()
 {
@@ -19,9 +20,12 @@ void LandTile::recreate()
 
     clear();
 
-    setStride(3 * sizeof(float));
+    setStride((3 + 2) * sizeof(float)); // Vertices + UV
     setPrimitiveType(QQuick3DGeometry::PrimitiveType::Triangles);
     addAttribute(QQuick3DGeometry::Attribute::PositionSemantic, 0, QQuick3DGeometry::Attribute::F32Type);
+    addAttribute(QQuick3DGeometry::Attribute::TexCoordSemantic,
+                 3 * sizeof(float),
+                 QQuick3DGeometry::Attribute::F32Type);
 
     const int vertexCountPerSquare = 6; // two triangles
     const int vertexCount = m_resolution.x() * m_resolution.z() * vertexCountPerSquare;
@@ -120,13 +124,24 @@ void LandTile::updateData()
             QVector2D c2(x * distX, (z + 1) * distX);
             QVector2D c3(x * distX, z * distZ);
 
+            QVector2D uv0(1 / m_resolution.x(), 1 / m_resolution.z());
+            QVector2D uv1(1 / m_resolution.x(), 0);
+            QVector2D uv2(0, 1 / m_resolution.z());
+            QVector2D uv3(0, 0);
+
             COORD(c0);
+            UV(uv0);
             COORD(c1);
+            UV(uv1);
             COORD(c2);
+            UV(uv2);
 
             COORD(c2);
+            UV(uv2);
             COORD(c1);
+            UV(uv1);
             COORD(c3);
+            UV(uv3);
         }
     }
 

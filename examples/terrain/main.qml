@@ -34,10 +34,10 @@ Window {
         }
         Slider {
             id: scaleSlider
-            width: 200
-            from: 1
-            to: 300
-            value: 175
+            width: 300
+            from: 0.001
+            to: 10
+            value: 1
             onValueChanged: print("scale:", value)
         }
     }
@@ -80,12 +80,23 @@ Window {
             id: tileView
             center: personCamera.position
             tileSize: Qt.vector3d(150, 1, 150)
-            tileCount: Qt.vector3d(30, 1, 30)
+            tileCount: Qt.vector3d(20, 1, 20)
 
             delegate: Model {
                 id: delegate
-                scale: Qt.vector3d(1, delegate.parent.scaleSlider.value, 1);
-                materials: [ DefaultMaterial { diffuseColor: "green" } ]
+                scale: Qt.vector3d(1, 175, 1);
+
+                materials: [
+                    DefaultMaterial {
+                        diffuseMap: Texture {
+                            source: "textures/grass.jpg"
+                            scaleU: 4
+                            scaleV: 4
+                            mappingMode: Texture.UV
+                        }
+                    }
+                ]
+
                 geometry: LandTile {
                     resolution: Qt.vector3d(30, 30, 30)
                     sampleScale: Qt.vector3d(0.001, 0.001, 0.001)
@@ -116,12 +127,10 @@ Window {
             }
         }
 
-        OrthographicCamera {
+        PerspectiveCamera {
             id: droneCamera
-            position: Qt.vector3d(personCamera.x, personCamera.y + 1000, personCamera.z)
+            position: Qt.vector3d(personCamera.x, personCamera.y + 5000, personCamera.z)
             eulerRotation: Qt.vector3d(-90, 0, 0)
-            horizontalMagnification: 0.1
-            verticalMagnification: 0.1
         }
 
         DirectionalLight {
@@ -135,6 +144,7 @@ Window {
 
     WasdController {
         controlledObject: personCamera
+        speed: 0.1
     }
 
 }
