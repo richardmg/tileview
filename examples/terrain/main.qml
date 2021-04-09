@@ -79,8 +79,8 @@ Window {
         TileView {
             id: tileView
             center: personCamera.position
-            tileSize: Qt.vector3d(1000, 1, 1000)
-            tileCount: Qt.vector3d(20, 1, 20)
+            tileSize: Qt.vector3d(150, 1, 150)
+            tileCount: Qt.vector3d(30, 1, 30)
 
             delegate: Model {
                 id: delegate
@@ -98,11 +98,11 @@ Window {
             property alias sampleSlider: sampleSlider
             property alias scaleSlider: scaleSlider
 
-//            Connections {
-//                target: personCamera
-//                function onRotationChanged() { tileView.direction = personCamera.forward }
-//            }
-//            Component.onCompleted: direction = personCamera.forward
+            Connections {
+                target: personCamera
+                function onRotationChanged() { tileView.direction = personCamera.forward }
+            }
+            Component.onCompleted: direction = personCamera.forward
         }
 
         PerspectiveCamera {
